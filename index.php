@@ -2,7 +2,7 @@
 
 require_once './vendor/autoload.php';
 
-use ApplicationBase\Infra\Slim\{SlimCorsMiddleware, SlimErrorHandler};
+use ApplicationBase\Infra\Slim\{Router, SlimCorsMiddleware, SlimErrorHandler};
 use DI\Bridge\Slim\Bridge;
 use DI\Container;
 use Psr\Http\Message\RequestInterface;
@@ -18,11 +18,7 @@ $app->addRoutingMiddleware();
 $app->addBodyParsingMiddleware();
 $app->add(new SlimCorsMiddleware);
 
-$app->options('/{routes:.+}', function (RequestInterface $request, Response $response) {
-	return $response;
-});
-
-//add router here
+(new Router)($app);
 
 $errorMiddleware = $app->addErrorMiddleware(false, false, false);
 $errorMiddleware->setDefaultErrorHandler(new SlimErrorHandler($app->getCallableResolver(), $app->getResponseFactory()));

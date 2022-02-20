@@ -2,13 +2,15 @@
 
 namespace ApplicationBase\Infra;
 
-use ApplicationBase\Infra\Attributes\{ArrayTypeAttribute,OptionalAttribute};
-use ApplicationBase\Infra\Exceptions\{InvalidValueException, RuntimeException};
+use ApplicationBase\Infra\Attributes\ArrayTypeAttribute;
+use ApplicationBase\Infra\Exceptions\{AppException, InvalidValueException};
 use ReflectionClass;
 use ReflectionException;
+use ReflectionProperty;
 use Psr\Http\Message\{ResponseInterface, ServerRequestInterface};
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Routing\RouteContext;
+use Throwable;
 use UnitEnum;
 
 class DTOConstructor
@@ -22,20 +24,29 @@ class DTOConstructor
 	 * @throws InvalidValueException
 	 */
 	public function __invoke(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface{
-		global $container;
-		$body = $request->getParsedBody();
-		$query = array_merge($request->getQueryParams(), RouteContext::fromRequest($request)->getRoute()?->getArguments());
+		$body       = $request->getParsedBody();
+		$query      = $request->getQueryParams();
+		$arguments  = RouteContext::fromRequest($request)->getRoute()?->getArguments();
+
+		/**
+		 * @var DTOAbstract
+		 */
 		$dto = new $this->className;
 
 		try {
-			$this->fillDto($dto, $query);
-			$this->fillDto($dto, $body);
-			$this->validateDTOObject($dto);
-		}catch (\Throwable $t){
-			throw new InvalidValueException(message: 'Invalid parameters where sent to the server', previous: $t);
+			self::fill($dto, $body);
+			self::fill($dto, $query);
+			self::fill($dto, $arguments);
+			$dto->validateDTO();
+		}catch (AppException $e){
+			throw $e;
+		}catch (Throwable $t){
+			throw new InvalidValueException(message: 'Invalid values supplied in the request', previous: $t);
 		}
 
-		$container->set($this->className, $dto);
+		global $container;
+		$container->set($dto::class, $dto);
+		$request = $request->withParsedBody($dto);
 
 		return $handler->handle($request);
 	}
@@ -46,99 +57,99 @@ class DTOConstructor
 	 * @return DTOAbstract
 	 * @throws InvalidValueException
 	 * @throws ReflectionException
-	 * @throws RuntimeException
 	 */
-	private function fillDto(DTOAbstract $dto, object|array $parameters):DTOAbstract{
-		$reflector = new ReflectionClass($dto::class);
-		$properties = $reflector->getProperties();
-
+	public static function fill(DTOAbstract $dto, object|array $parameters):DTOAbstract{
+		$properties = (new ReflectionClass($dto::class))->getProperties();
 		foreach ($properties as $property){
-			$propertyName = $property->getName();
-			$propertyType = $property->getType()?->getName();
-
-			if (is_array($parameters)){
-				if (!isset($parameters[$propertyName])){
-					continue;
-				}
-			}else if (!isset($parameters->{$propertyName})){
-				continue;
-			}
-
-			if (class_exists($propertyType)){
-				if (is_subclass_of($propertyType, DTOAbstract::class)){
-					$dto->{$propertyName} = $this->fillDto(new $propertyType, is_array($parameters) ? $parameters[$propertyName] : $parameters->{$propertyName});
-				}else if (is_subclass_of($propertyType, UnitEnum::class)){
-					$dto->{$propertyName} =
-						$propertyType::tryFrom(is_array($parameters) ? $parameters[$propertyName] : $parameters->propertyName) ??
-						throw new InvalidValueException('Invalid Value supplied to Enum');
-				}else{
-					throw new InvalidValueException('Invalid object type');
-				}
-			}else if ($propertyType === "array"){
-				if (is_array($parameters)){
-					if (!is_array($parameters[$propertyName])){
-						throw new InvalidValueException("The {$propertyName} parameter must be an array");
-					}
-				}else if (!is_array($parameters->{$propertyName})){
-					throw new InvalidValueException("The {$propertyName} parameter must be an array");
-				}
-
-				$propertyAttributes = $property->getAttributes(ArrayTypeAttribute::class);
-				if (count($propertyAttributes)){
-					$atributeInstance = $propertyAttributes[0]->newInstance();
-					if ($atributeInstance->getIsPrimitive()){
-						$dto->{$propertyName} = is_array($parameters) ? $parameters[$propertyName] : $parameters->{$propertyName};
-					}else{
-						$dto->{$propertyName} = array_map(function ($object) use ($atributeInstance){
-							return $this->fillDto(new $atributeInstance->getPropertyType, $object);
-						}, is_array($parameters) ? $parameters[$propertyName] : $parameters->{$propertyName});
-					}
-				}else{
-					throw new RuntimeException('All arrays in DTO\'s must have an ArrayTypeAttribute');
-				}
-
-			}else {
-				$dto->{$propertyName} = $parameters->{$propertyName};
-			}
+			self::fetchFrom($dto, $parameters, $property);
 		}
 
 		return $dto;
 	}
 
 	/**
-	 * @param DTOAbstract $dto
+	 * @param                    $dto
+	 * @param mixed              $data
+	 * @param ReflectionProperty $property
 	 * @return void
 	 * @throws InvalidValueException
 	 * @throws ReflectionException
 	 */
-	private function validateDTOObject(DTOAbstract $dto): void
-	{
-		$reflector = new ReflectionClass($dto::class);
-		$properties = $reflector->getProperties();
+	private static function fetchFrom(&$dto, mixed $data, ReflectionProperty $property):void{
+		$propertyName       = $property->getName();
+		$propertyType       = $property->getType()?->getName();
 
-		foreach ($properties as $property){
-			$propertyName = $property->getName();
-			$propertyType = $property->getType()?->getName();
-			$propertyAttributes = array_map(function ($attribute){
-				return $attribute->getName();
-			}, $property->getAttributes());
-
-			if (!isset($dto->{$propertyName})){
-				if (in_array(OptionalAttribute::class, $propertyAttributes)){
-					continue;
+		if (!is_null($data)){
+			if (is_array($data)){
+				if (is_array($data[$propertyName])){
+					self::fetchFromArray($dto->{$propertyName}, $data[$propertyName], $property);
+				}else if (is_object($data[$propertyName])){
+					self::fetchFromObject($dto->{$propertyName}, $data[$propertyName], $propertyType);
+				}else{
+					$dto->{$propertyName} = $data;
 				}
-
-				throw new InvalidValueException("The {$propertyName} parameter is required");
+			}else if (is_object($data)){
+				if (isset($data->{$propertyName})){
+					if (is_array($data->{$propertyName})){
+						self::fetchFromArray($dto->{$propertyName}, $data->{$propertyName}, $property);
+					}else if (is_object($data->{$propertyName})){
+						self::fetchFromObject($dto->{$propertyName}, $data->{$propertyName}, $propertyType);
+					}else if (is_subclass_of($propertyType, UnitEnum::class)){
+						$dto->{$propertyName} = $propertyType::tryFrom($data) ?? throw new InvalidValueException('Invalid Value supplied to Enum');
+					}else{
+						$dto->{$propertyName} = $data->{$propertyName};
+					}
+				}
+			}else{
+				$dto = $data;
 			}
+		}
+	}
 
-			if (is_subclass_of(DTOAbstract::class, $propertyType)){
-				$this->validateDTOObject($this->{$propertyName});
+	/**
+	 * @param                    $dto
+	 * @param array              $array
+	 * @param ReflectionProperty $property
+	 * @return void
+	 * @throws InvalidValueException
+	 * @throws ReflectionException
+	 */
+	private static function fetchFromArray(&$dto, array $array, ReflectionProperty $property):void{
+		$propertyAttributes = $property->getAttributes();
+		$propertyAttributeNames = array_map(static function ($attribute){
+			return $attribute->getName();
+		}, $propertyAttributes);
+
+		if (!in_array(ArrayTypeAttribute::class, $propertyAttributeNames, true)){
+			throw new InvalidValueException('All array properties must have a ' . ArrayTypeAttribute::class . " class");
+		}
+
+		$atributeInstance = $property->getAttributes(ArrayTypeAttribute::class)[0]->newInstance();
+
+		if (!$atributeInstance->getIsPrimitive()) {
+			$array = array_map(static function ($item) use ($atributeInstance) {
+				return self::fill((new ($atributeInstance->getPropertyType())), $item);
+			}, $array);
+		}
+		$dto = $array;
+	}
+
+	/**
+	 * @param        $dto
+	 * @param object $object
+	 * @param string $propertyType
+	 * @return void
+	 * @throws InvalidValueException
+	 * @throws ReflectionException
+	 */
+	private static function fetchFromObject(&$dto, object $object, string $propertyType):void{
+		if (class_exists($propertyType)){
+			if (is_subclass_of($propertyType, DTOAbstract::class)){
+				$dto = new $propertyType;
+				self::fill($dto, $object);
+			}else{
+				throw new InvalidValueException('Invalid object type');
 			}
-
-			if ($propertyType === 'array'){
-				//@todo validar dto's dentro do array
-			}
-
 		}
 	}
 }

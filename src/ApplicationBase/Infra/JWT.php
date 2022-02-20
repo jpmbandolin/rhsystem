@@ -7,6 +7,8 @@ use Firebase\JWT\{BeforeValidException, ExpiredException, SignatureInvalidExcept
 
 class JWT extends \Firebase\JWT\JWT
 {
+	private function __construct(){}
+
 	/**
 	 * @param mixed $payload
 	 * @return string
