@@ -36,12 +36,19 @@ class DTOConstructor
 
 		try {
 			self::fill($dto, $body);
-			self::fill($dto, $query);
-			self::fill($dto, $arguments);
+			if (count($query)){
+				self::fill($dto, $query);
+			}
+
+			if (count($arguments)){
+				self::fill($dto, $arguments);
+			}
+
 			$dto->validateDTO();
 		}catch (AppException $e){
 			throw $e;
 		}catch (Throwable $t){
+			die($t->getMessage());
 			throw new InvalidValueException(message: 'Invalid values supplied in the request', previous: $t);
 		}
 
@@ -65,7 +72,12 @@ class DTOConstructor
 			self::fetchFrom($dto, $parameters, $property);
 		}
 
-		return $dto;
+		try {
+			return $dto;
+		}catch (Throwable){
+			die(var_dump($dto));
+		}
+
 	}
 
 	/**

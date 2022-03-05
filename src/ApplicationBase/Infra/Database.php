@@ -9,10 +9,6 @@ use Throwable;
 class Database extends \PDO
 {
 	protected static Database $instance;
-	private string $host;
-	private string $user;
-	private string $pass;
-	private string $database;
 
 	/**
 	 * @throws DatabaseException
@@ -21,15 +17,15 @@ class Database extends \PDO
 	{
 		global $ENV;
 
-		$this->host = $ENV['DATABASE_CONNECTION']['host'];
-		$this->user = $ENV['DATABASE_CONNECTION']['user'];
-		$this->pass = $ENV['DATABASE_CONNECTION']['pass'];
-		$this->database = $ENV['DATABASE_CONNECTION']['database'];
+		$host = $ENV['DATABASE']['host'];
+		$user = $ENV['DATABASE']['user'];
+		$pass = $ENV['DATABASE']['password'];
+		$database = $ENV['DATABASE']['database'];
 
-		$dsn = 'mysql:dbname=' . $this->database .';host=' . $this->host;
+		$dsn = 'mysql:dbname=' . $database .';host=' . $host;
 
 		try{
-			parent::__construct($dsn, $this->user, $this->pass, ["charset"=>"utf8"]);
+			parent::__construct($dsn, $user, $pass, ["charset"=>"utf8"]);
 			$this->exec("set names utf8");
 		}catch(Throwable $t){
 			throw new DatabaseException(message: "Error starting database connection", previous: $t);
@@ -45,7 +41,7 @@ class Database extends \PDO
 	 */
 	public static function getInstance(): Database
 	{
-		if (is_null(self::$instance)){
+		if (!isset(self::$instance) || is_null(self::$instance)){
 			self::$instance = new Database;
 		}
 

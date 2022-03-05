@@ -29,9 +29,11 @@ class Authenticator
 		}
 
 		$token = explode('Bearer ', $headers['Authorization'][0])[1];
-		$container->set(JWT::class, JWT::getJWTPayload($token));
+
 		self::checkWhitelist($token);
-		//@todo implementar validação de atributos com reflection, deve ser feita após o set do JWT
+
+		$container->set('jwt', $token);
+		$container->set(JWT::class, JWT::getJWTPayload($token));
 
 		return $handler->handle($request);
 	}

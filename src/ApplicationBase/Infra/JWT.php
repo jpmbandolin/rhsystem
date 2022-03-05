@@ -19,7 +19,7 @@ class JWT extends \Firebase\JWT\JWT
 			"iss"=>"server",
 			"aud"=>"users",
 			"iat"=>time(),
-			"exp"=>$ENV['JWT']['expires_at'] //time in seconds
+			"exp"=>time() + $ENV['JWT']['expires_at'] //time in seconds
 		];
 
 		return self::encode(array_merge((array)$payload, $defaultPayload), $ENV['JWT']['key']);
@@ -34,7 +34,7 @@ class JWT extends \Firebase\JWT\JWT
 		global $ENV;
 
 		try {
-			return self::decode($jwt, $ENV['JWT']['key']);
+			return self::decode($jwt, $ENV['JWT']['key'], array_keys(self::$supported_algs));
 		}catch (SignatureInvalidException $e){
 			throw new UnauthenticatedException(message: "Invalid JWT", previous: $e);
 		}catch (BeforeValidException $e){

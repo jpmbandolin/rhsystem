@@ -4,7 +4,7 @@ namespace ApplicationBase\Infra;
 
 final class Redis
 {
-	private static ?\Redis $connection;
+	private static ?\Redis $connection = null;
 
 	private function __construct(){}
 

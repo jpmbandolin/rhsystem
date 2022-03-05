@@ -23,12 +23,26 @@ class SlimErrorHandler extends ErrorHandler
 	 */
 	public function __invoke(ServerRequestInterface $request, Throwable $exception, bool $displayErrorDetails, bool $logErrors, bool $logErrorDetails): ResponseInterface
 	{
-		global $app;
+		global $app, $ENV;
 		$status = 500;
 		$payload = [];
+		$devEnvironment = $ENV['APPLICATION']['environment'] === "dev";
+
 		if (is_a($exception, AppException::class)){
-			$payload['error'] = $exception->getMessage();
 			$status = $exception->getHttpStatusCode();
+			if ($devEnvironment){
+				$payload['error'] = $exception->getDetailedErrorMessage();
+				$payload['errorTrace'] = $exception->getTraceAsString();
+				$payload['file'] = $exception->getFile();
+				$payload['line'] = $exception->getLine();
+			}else{
+				$payload['error'] = $exception->getMessage();
+			}
+		}else if ($devEnvironment){
+			$payload['error'] =	$exception->getMessage();
+			$payload['errorTrace'] = $exception->getTraceAsString();
+			$payload['file'] = $exception->getFile();
+			$payload['line'] = $exception->getLine();
 		}else{
 			$payload['error'] = "Internal Server Error.";
 		}

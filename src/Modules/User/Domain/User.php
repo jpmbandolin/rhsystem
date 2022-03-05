@@ -84,7 +84,8 @@ class User
 	public function getJWT():string{
 		return JWT::generateJWT([
 			"id"=>$this->getId(),
-			"name"=>$this->getName()
+			"name"=>$this->getName(),
+			"email"=>$this->getEmail()
 		]);
 	}
 

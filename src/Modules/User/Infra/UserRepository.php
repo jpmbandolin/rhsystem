@@ -29,10 +29,10 @@ class UserRepository
 	 * @throws DatabaseException
 	 */
 	public static function getByLogin(string $login): ?User{
-		$sql = "SELECT id, name, password FROM user WHERE name = ?";
+		$sql = "SELECT id, name, password FROM user WHERE (name = ? OR email = ?)";
 
 		try {
-			return Database::getInstance()->fetchObject($sql, [$login], User::class) ?: null;
+			return Database::getInstance()->fetchObject($sql, [$login, $login], User::class) ?: null;
 		}catch (\Throwable $t){
 			throw new DatabaseException(message: 'Error getting user by Login', previous: $t);
 		}
@@ -44,18 +44,20 @@ class UserRepository
 	 * @throws DatabaseException
 	 */
 	public static function save(User $user):int{
-		$sql = "INSERT INTO user (id, name, password) 
-				VALUES (?,?,?)
+		$sql = "INSERT INTO user (id, name, password, email) 
+				VALUES (?,?,?,?)
 				ON DUPLICATE KEY UPDATE 
-				id = LAST_INSERT_ID(id),
-				name = VALUES(name),
-				password = VALUES(password)";
+				id			= LAST_INSERT_ID(id),
+				name		= VALUES(name),
+				email		= VALUES(email),
+				password	= VALUES(password)";
 
 		try {
 			Database::getInstance()->prepareAndExecute($sql, [
 				$user->getId(),
 				$user->getName(),
-				$user->getPassword()
+				$user->getPassword(),
+				$user->getEmail()
 			]);
 
 			return Database::getInstance()->lastInsertId();

@@ -9,6 +9,11 @@
       "email": "bandolin.jpmb@gmail.com"
     }
   ],
+  "autoload": {
+    "psr-4": {
+      "": "src"
+    }
+  },
   "require": {
     "slim/slim": "4.*",
     "slim/psr7": "1.3.0",

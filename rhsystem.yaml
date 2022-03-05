@@ -1,0 +1,79 @@
+openapi: 3.0.3
+info:
+  title: rhsystem
+  description: Documentação da API do sistema de RH
+  version: 1.0.0
+servers:
+  - url: '127.0.0.1/rhsystem'
+tags:
+  - name: user
+    description: Dados relacionados a usuários
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Fornecino na requisição de login
+paths:
+  /user/login:
+    post:
+      tags:
+        - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Login realizado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        401:
+          description: Dados de login inválidos
+      description: get a valid token for the user
+
+  /user:
+    post:
+      tags:
+        - user
+      security:
+        - bearerAuth : []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                password:
+                  type: string
+                confirmPassword:
+                  type: string
+                email:
+                  type: string
+      responses:
+        201:
+          description: User succesfully created
+
+  /logout:
+    post:
+      tags:
+        - user
+      security:
+        - bearerAuth: []
+      responses:
+        204:
+          description: Logout was successfull
