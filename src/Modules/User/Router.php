@@ -15,8 +15,8 @@ class Router
 {
 	public function __invoke(RouteCollectorProxy $group){
 		$group->post('', [Create::class, 'run'])
-			->add(new DTOConstructor(CreateDTO::class));
-			//->add(new Authenticator);
+			->add(new DTOConstructor(CreateDTO::class))
+			->add(new Authenticator);
 
 		$group->post('/login', [Login::class, 'run'])
 			->add(new DTOConstructor(LoginDTO::class));
