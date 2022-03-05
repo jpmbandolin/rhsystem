@@ -36,19 +36,13 @@ class DTOConstructor
 
 		try {
 			self::fill($dto, $body);
-			if (count($query)){
-				self::fill($dto, $query);
-			}
-
-			if (count($arguments)){
-				self::fill($dto, $arguments);
-			}
+			self::fill($dto, $query);
+			self::fill($dto, $arguments);
 
 			$dto->validateDTO();
 		}catch (AppException $e){
 			throw $e;
 		}catch (Throwable $t){
-			die($t->getMessage());
 			throw new InvalidValueException(message: 'Invalid values supplied in the request', previous: $t);
 		}
 
@@ -68,16 +62,12 @@ class DTOConstructor
 	 */
 	public static function fill(DTOAbstract $dto, object|array $parameters):DTOAbstract{
 		$properties = (new ReflectionClass($dto::class))->getProperties();
+
 		foreach ($properties as $property){
 			self::fetchFrom($dto, $parameters, $property);
 		}
 
-		try {
-			return $dto;
-		}catch (Throwable){
-			die(var_dump($dto));
-		}
-
+		return $dto;
 	}
 
 	/**
@@ -94,12 +84,14 @@ class DTOConstructor
 
 		if (!is_null($data)){
 			if (is_array($data)){
-				if (is_array($data[$propertyName])){
-					self::fetchFromArray($dto->{$propertyName}, $data[$propertyName], $property);
-				}else if (is_object($data[$propertyName])){
-					self::fetchFromObject($dto->{$propertyName}, $data[$propertyName], $propertyType);
-				}else{
-					$dto->{$propertyName} = $data;
+				if (isset($data[$propertyName])){
+					if (is_array($data[$propertyName])){
+						self::fetchFromArray($dto->{$propertyName}, $data[$propertyName], $property);
+					}else if (is_object($data[$propertyName])){
+						self::fetchFromObject($dto->{$propertyName}, $data[$propertyName], $propertyType);
+					}else{
+						$dto->{$propertyName} = $data;
+					}
 				}
 			}else if (is_object($data)){
 				if (isset($data->{$propertyName})){
