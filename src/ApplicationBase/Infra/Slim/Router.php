@@ -19,18 +19,18 @@ class Router
 			return $response;
 		});
 
-		$app->get('/', function (Request $request, Response $response): Response{
+		$app->get('/connection-test', function (Request $request, Response $response): Response{
 			$response->getBody()->write(json_encode(['online' => true], JSON_THROW_ON_ERROR));
 			return $response;
 		});
 
 		$app->get('/connection-test-secure', function (Response $response) {
-			$response->getBody()->write("{\"online\": true, \"secure\": true}");
+			$response->getBody()->write(json_encode(['online' => true], JSON_THROW_ON_ERROR));
 			return $response;
 		})->add(new Authenticator);
 
 		$routeGroups = [
-			//"/user"  => \Modules\User\Router::class,
+			"/user"  => \Modules\User\Router::class,
 		];
 
 		foreach ($routeGroups as $index => $router){

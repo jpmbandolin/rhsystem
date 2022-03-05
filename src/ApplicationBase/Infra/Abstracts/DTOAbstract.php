@@ -1,8 +1,8 @@
 <?php
 
-namespace ApplicationBase\Infra;
+namespace ApplicationBase\Infra\Abstracts;
 
-use ApplicationBase\Infra\Attributes\{ArrayTypeAttribute,OptionalAttribute};
+use ApplicationBase\Infra\Attributes\{ArrayTypeAttribute, OptionalAttribute};
 use ApplicationBase\Infra\Exceptions\InvalidValueException;
 use ReflectionClass;
 

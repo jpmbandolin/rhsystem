@@ -5,8 +5,6 @@ require_once './vendor/autoload.php';
 use ApplicationBase\Infra\Slim\{Router, SlimCorsMiddleware, SlimErrorHandler};
 use DI\Bridge\Slim\Bridge;
 use DI\Container;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface as Response;
 
 $ENV = parse_ini_file('../env.ini', true);
 

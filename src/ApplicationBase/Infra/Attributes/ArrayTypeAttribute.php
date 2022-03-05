@@ -2,7 +2,7 @@
 
 namespace ApplicationBase\Infra\Attributes;
 
-use ApplicationBase\Infra\DTOAbstract;
+use ApplicationBase\Infra\Abstracts\DTOAbstract;
 use ApplicationBase\Infra\Exceptions\RuntimeException;
 use Attribute;
 

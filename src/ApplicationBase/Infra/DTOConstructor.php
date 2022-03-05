@@ -2,13 +2,14 @@
 
 namespace ApplicationBase\Infra;
 
+use ApplicationBase\Infra\Abstracts\DTOAbstract;
 use ApplicationBase\Infra\Attributes\ArrayTypeAttribute;
 use ApplicationBase\Infra\Exceptions\{AppException, InvalidValueException};
+use Psr\Http\Message\{ResponseInterface, ServerRequestInterface};
+use Psr\Http\Server\RequestHandlerInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
-use Psr\Http\Message\{ResponseInterface, ServerRequestInterface};
-use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Routing\RouteContext;
 use Throwable;
 use UnitEnum;
