@@ -23,16 +23,16 @@ class Get extends ControllerAbstract
 	public function run(GetDTO $dto): ResponseInterface
 	{
 		if (!is_null($dto->id)){
-			$user = User::getById($dto->id);
-
-			if (is_null($user)){
-				throw new NotFoundException('The requested user was not found');
-			}
-
 			$jwtData = $this->getJwtData();
 
 			if ($dto->id !== $jwtData->id && !in_array(PermissionEnum::UserRead, $jwtData->permissions, true)){
 				throw new PermissionException('You don\'t have permission to get data from this user');
+			}
+
+			$user = User::getById($dto->id);
+
+			if (is_null($user)){
+				throw new NotFoundException('The requested user was not found');
 			}
 
 			$response = [
