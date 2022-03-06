@@ -2,6 +2,8 @@
 
 namespace ApplicationBase\Infra;
 
+use ApplicationBase\Infra\Enums\EnumInterface;
+use ApplicationBase\Infra\Enums\PermissionEnum;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 use PDOStatement;
 use Throwable;
@@ -80,6 +82,10 @@ class Database extends \PDO
 		}else{
 			$array = $sql->fetchAll(self::FETCH_ASSOC);
 			$array = array_map(static function($row) use ($class_name){
+				if ($class_name === PermissionEnum::class){
+					return PermissionEnum::tryFrom($row['name']);
+				}
+
 				return new $class_name(...$row);
 			},$array);
 		}

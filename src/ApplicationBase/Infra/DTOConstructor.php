@@ -35,9 +35,17 @@ class DTOConstructor
 		$dto = new $this->className;
 
 		try {
-			self::fill($dto, $body);
-			self::fill($dto, $query);
-			self::fill($dto, $arguments);
+			if ($body){
+				self::fill($dto, $body);
+			}
+
+			if (count($query)){
+				self::fill($dto, $query);
+			}
+
+			if (count($arguments)){
+				self::fill($dto, $arguments);
+			}
 
 			$dto->validateDTO();
 		}catch (AppException $e){
@@ -89,6 +97,8 @@ class DTOConstructor
 						self::fetchFromArray($dto->{$propertyName}, $data[$propertyName], $property);
 					}else if (is_object($data[$propertyName])){
 						self::fetchFromObject($dto->{$propertyName}, $data[$propertyName], $propertyType);
+					}else if (is_string($data[$propertyName]) || is_numeric($data[$propertyName])){
+						$dto->{$propertyName} = $data[$propertyName];
 					}else{
 						$dto->{$propertyName} = $data;
 					}

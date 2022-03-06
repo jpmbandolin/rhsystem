@@ -3,8 +3,10 @@
 namespace Modules\User\Infra;
 
 use ApplicationBase\Infra\Database;
+use ApplicationBase\Infra\Enums\PermissionEnum;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 use Modules\User\Domain\User;
+use Throwable;
 
 class UserRepository
 {
@@ -14,11 +16,11 @@ class UserRepository
 	 * @throws DatabaseException
 	 */
 	public static function getById(int $id):?User{
-		$sql = "SELECT id, name FROM user WHERE id = ?";
+		$sql = "SELECT id, name, email, password FROM user WHERE id = ?";
 
 		try {
 			return Database::getInstance()->fetchObject($sql, [$id], User::class) ?: null;
-		}catch (\Throwable $t){
+		}catch (Throwable $t){
 			throw new DatabaseException(message: 'Error getting user by Id', previous: $t);
 		}
 	}
@@ -29,12 +31,43 @@ class UserRepository
 	 * @throws DatabaseException
 	 */
 	public static function getByLogin(string $login): ?User{
-		$sql = "SELECT id, name, password FROM user WHERE (name = ? OR email = ?)";
+		$sql = "SELECT id, name, email, password FROM user WHERE (name = ? OR email = ?)";
 
 		try {
 			return Database::getInstance()->fetchObject($sql, [$login, $login], User::class) ?: null;
-		}catch (\Throwable $t){
+		}catch (Throwable $t){
 			throw new DatabaseException(message: 'Error getting user by Login', previous: $t);
+		}
+	}
+
+	/**
+	 * @param User $user
+	 * @return PermissionEnum[]
+	 * @throws DatabaseException
+	 */
+	public static function getPermissions(User $user):array{
+		$sql = "SELECT name 
+				FROM user_permission
+				WHERE user_id = ?";
+
+		try {
+			return Database::getInstance()->fetchMultiObject(sql: $sql, args: [$user->getId()], class_name: PermissionEnum::class) ?: [];
+		}catch (Throwable $t){
+			throw new DatabaseException(message: "Error fetching user permissions", previous: $t);
+		}
+	}
+
+	/**
+	 * @return User[]
+	 * @throws DatabaseException
+	 */
+	public static function getAll(): array{
+		$sql = "SELECT id, name, email, password FROM user";
+
+		try {
+			return Database::getInstance()->fetchMultiObject(sql: $sql, class_name: User::class) ?: [];
+		}catch (Throwable $t){
+			throw new DatabaseException(message: 'Error getting users', previous: $t);
 		}
 	}
 
@@ -61,7 +94,7 @@ class UserRepository
 			]);
 
 			return Database::getInstance()->lastInsertId();
-		}catch (\Throwable $t){
+		}catch (Throwable $t){
 			throw new DatabaseException(message: "Error saving new user", previous: $t);
 		}
 	}

@@ -2,12 +2,13 @@
 
 namespace Modules\User\Application\Create;
 
+use ApplicationBase\Infra\Abstracts\ControllerAbstract;
 use ApplicationBase\Infra\Attributes\RouteAuthenticator;
 use ApplicationBase\Infra\Exceptions\{BusinessException, DatabaseException, InvalidValueException};
 use Modules\User\Domain\User;
 use Psr\Http\Message\ResponseInterface;
 
-class Create extends \ApplicationBase\Infra\Abstracts\ControllerAbstract
+class Create extends ControllerAbstract
 {
 	/**
 	 * @param CreateDTO $dto

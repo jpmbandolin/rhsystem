@@ -3,6 +3,7 @@
 
 namespace Modules\User\Domain;
 
+use ApplicationBase\Infra\Enums\PermissionEnum;
 use ApplicationBase\Infra\Exceptions\{DatabaseException, InvalidValueException};
 use ApplicationBase\Infra\JWT;
 use ApplicationBase\Infra\Vo\Email;
@@ -11,6 +12,10 @@ use Modules\User\Infra\UserRepository;
 class User
 {
 	private ?Email $email;
+	/**
+	 * @var PermissionEnum[]
+	 */
+	private array $permissions = [];
 
 	/**
 	 * @param int|null $id
@@ -29,9 +34,21 @@ class User
 	}
 
 	/**
-	 * @return Email|null
+	 * @return PermissionEnum[]
+	 * @throws DatabaseException
 	 */
-	public function getEmail(): ?Email
+	public function getPermissions():array{
+		if (!count($this->permissions)){
+			$this->permissions = UserRepository::getPermissions($this);
+		}
+
+		return $this->permissions;
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function getEmail(): ?string
 	{
 		return $this->email;
 	}
@@ -79,13 +96,25 @@ class User
 	}
 
 	/**
+	 * @return User[]
+	 * @throws DatabaseException
+	 */
+	public static function getAll(): array{
+		return UserRepository::getAll();
+	}
+
+	/**
 	 * @return string
+	 * @throws DatabaseException
 	 */
 	public function getJWT():string{
 		return JWT::generateJWT([
-			"id"=>$this->getId(),
-			"name"=>$this->getName(),
-			"email"=>$this->getEmail()
+			"id"            => $this->getId(),
+			"name"          => $this->getName(),
+			"email"         => $this->getEmail(),
+			"permissions"   => array_map(static function (PermissionEnum $enum){
+				return $enum->value;
+			}, $this->getPermissions())
 		]);
 	}
 
