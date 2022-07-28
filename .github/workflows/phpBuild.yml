@@ -39,5 +39,5 @@ jobs:
         host: 167.71.187.102
         port: 22
         password: ${{ secrets.SERVER_PASSWORD }}
-        localDir: './*'
+        localDir: './'
         remoteDir: '/var/www/html'
