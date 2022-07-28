@@ -64,7 +64,7 @@ trait Actions
 	 */
 	private function createDir(string $dir): void
 	{
-		if (!mkdir($concurrentDirectory = $dir) && !is_dir($concurrentDirectory)) {
+		if (!is_dir($concurrentDirectory = $dir) && !mkdir($concurrentDirectory) && !is_dir($concurrentDirectory)) {
 			throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 		}
 	}
