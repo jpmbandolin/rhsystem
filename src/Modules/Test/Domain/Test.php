@@ -5,9 +5,10 @@ namespace Modules\Test\Domain;
 use Modules\Comment\Domain\Comment;
 use Modules\File\Domain\FileAbstract;
 use Modules\Test\Infra\TestRepository;
+use ApplicationBase\Infra\Exceptions\{DatabaseException};
 use Modules\Candidate\Domain\Candidate;
 use Psr\Http\Message\UploadedFileInterface;
-use ApplicationBase\Infra\Exceptions\{AppException, DatabaseException};
+use ApplicationBase\Infra\Enums\EntityStatusEnum;
 
 class Test extends FileAbstract
 {
@@ -23,24 +24,14 @@ class Test extends FileAbstract
 		?string                           $type = null,
 		?int                              $createdBy = null,
 		?string                           $name = null,
-		private ?string                   $result = null
+		private ?string                   $result = null,
+		string|EntityStatusEnum|null      $status = null
 	) {
-		parent::__construct(file: $file, name: $name);
+		parent::__construct(file: $file, name: $name, status: $status);
 		$this->fileId = $fileId;
 		$this->userFriendlyName = $userFriendlyName;
 		$this->type = $type;
 		$this->createdBy = $createdBy;
-	}
-	
-	/**
-	 * @param Candidate $candidate
-	 *
-	 * @return void
-	 * @throws DatabaseException
-	 */
-	public function patch(Candidate $candidate): void
-	{
-		TestRepository::save($this, $candidate);
 	}
 	
 	/**
@@ -52,6 +43,17 @@ class Test extends FileAbstract
 	public static function getByFileId(int $fileId): ?Test
 	{
 		return TestRepository::getByFileId($fileId);
+	}
+	
+	/**
+	 * @param Candidate $candidate
+	 *
+	 * @return void
+	 * @throws DatabaseException
+	 */
+	public function patch(Candidate $candidate): void
+	{
+		TestRepository::save($this, $candidate);
 	}
 	
 	/**

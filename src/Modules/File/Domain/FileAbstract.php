@@ -2,28 +2,77 @@
 
 namespace Modules\File\Domain;
 
+use Modules\File\Infra\FileRepository;
 use Psr\Http\Message\UploadedFileInterface;
+use ApplicationBase\Infra\Enums\EntityStatusEnum;
+use ApplicationBase\Infra\Exceptions\DatabaseException;
+use ApplicationBase\Infra\Exceptions\InvalidValueException;
 
 abstract class FileAbstract
 {
 	use Actions;
 	
 	protected ?string $name;
+	protected ?EntityStatusEnum $status;
 	
+	/**
+	 * @param null|int                          $fileId
+	 * @param null|UploadedFileInterface|string $file
+	 * @param null|string                       $userFriendlyName
+	 * @param null|string                       $type
+	 * @param null|int                          $createdBy
+	 * @param null|string                       $name
+	 * @param null|string|EntityStatusEnum      $status
+	 *
+	 * @throws InvalidValueException
+	 */
 	public function __construct(
 		protected ?int                              $fileId = null,
 		protected UploadedFileInterface|string|null $file = null,
 		protected ?string                           $userFriendlyName = null,
 		protected ?string                           $type = null,
 		protected ?int                              $createdBy = null,
-		?string                                     $name = null
+		?string                                     $name = null,
+		string|EntityStatusEnum|null                $status = null
 	) {
 		if (is_a($this->file, UploadedFileInterface::class)) {
 			$fileStream = $this->file->getStream();
 			$this->file = $fileStream->read($fileStream->getSize());
 		}
-
+		$this->setStatus($status);
 		$this->name = $name;
+	}
+	
+	/**
+	 * @return null|EntityStatusEnum
+	 */
+	public function getStatus(): EntityStatusEnum|null
+	{
+		return $this->status;
+	}
+	
+	/**
+	 * @param null|EntityStatusEnum|string $status
+	 *
+	 * @return FileAbstract
+	 * @throws InvalidValueException
+	 */
+	public function setStatus(EntityStatusEnum|string|null $status): FileAbstract
+	{
+		if (is_string($status)){
+			$status = EntityStatusEnum::tryFrom($status) ?? throw new InvalidValueException("Invalid value suppied for file status");
+		}
+
+		$this->status = $status;
+		return $this;
+	}
+	
+	/**
+	 * @return void
+	 * @throws DatabaseException
+	 */
+	public function updateFileStatus(): void{
+		FileRepository::updateFileStatus($this);
 	}
 	
 	/**

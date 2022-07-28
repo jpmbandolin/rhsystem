@@ -17,7 +17,10 @@ $app->addRoutingMiddleware();
 $app->addBodyParsingMiddleware();
 $app->add(new SlimCorsMiddleware);
 
-Authenticator::setWhiteListHandler(new RedisWhiteList);
+if ($ENV['APPLICATION']['token_whitelist'] === "1"){
+	Authenticator::setWhiteListHandler(new RedisWhiteList);
+}
+
 (new Router)($app);
 
 $errorMiddleware = $app->addErrorMiddleware(false, false, false);

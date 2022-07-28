@@ -21,11 +21,11 @@ class GetAllTests extends ControllerAbstract
 	public function run(GetAllTestsDTO $dto): ResponseInterface
 	{
 		$candidate = Candidate::getById($dto->candidateId);
-
+		
 		if (is_null($candidate)) {
 			throw new NotFoundException("The requested candidate was not found");
 		}
-
+		
 		return $this->replyRequest(
 			[
 				"d" => array_map(
@@ -35,6 +35,7 @@ class GetAllTests extends ControllerAbstract
 							"userFriendlyName" => $test->getUserFriendlyName(),
 							"type"             => $test->getType(),
 							"result"           => $test->getResult(),
+							"status"           => $test->getStatus()->value,
 						];
 					}, $candidate->getTests()
 				),

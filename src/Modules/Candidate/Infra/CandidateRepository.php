@@ -8,6 +8,7 @@ use Modules\Photo\Domain\Photo;
 use Modules\Resume\Domain\Resume;
 use ApplicationBase\Infra\Database;
 use Modules\Candidate\Domain\Candidate;
+use ApplicationBase\Infra\Enums\EntityStatusEnum;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 
 class CandidateRepository
@@ -103,14 +104,14 @@ class CandidateRepository
 	 * @throws DatabaseException
 	 */
 	public static function getPhoto(Candidate $candidate): ?Photo{
-		$sql = "SELECT f.id as fileId, f.created_by as createdBy, f.user_friendly_name as userFriendlyName, f.type, f.name
+		$sql = "SELECT f.id as fileId, f.created_by as createdBy, f.user_friendly_name as userFriendlyName, f.type, f.name, f.status
 				FROM file f
 				INNER JOIN candidate c ON c.photo_id = f.id
-				WHERE c.id = ?
+				WHERE c.id = ? AND f.status != ?
 				LIMIT 1";
 		
 		try {
-			return Database::getInstance()->fetchObject($sql, [$candidate->getId()], Photo::class) ?: null;
+			return Database::getInstance()->fetchObject($sql, [$candidate->getId(), EntityStatusEnum::Deleted->value], Photo::class) ?: null;
 		}catch (Throwable $t){
 			throw new DatabaseException("Error getting candidate photo", previous: $t);
 		}
@@ -164,13 +165,13 @@ class CandidateRepository
 	 * @throws DatabaseException
 	 */
 	public static function getTests(Candidate $candidate): array{
-		$sql = "SELECT f.id as fileId, f.created_by as createdBy, f.user_friendly_name as userFriendlyName, f.type, f.name, ct.result
+		$sql = "SELECT f.id as fileId, f.created_by as createdBy, f.user_friendly_name as userFriendlyName, f.type, f.name, ct.result, f.status
 				FROM file f
 				INNER JOIN candidate_test ct ON ct.file_id = f.id
-				WHERE ct.candidate_id = ?";
+				WHERE ct.candidate_id = ? AND f.status != ?";
 
 		try {
-			return Database::getInstance()->fetchMultiObject($sql, [$candidate->getId()], Test::class) ?: [];
+			return Database::getInstance()->fetchMultiObject($sql, [$candidate->getId(), EntityStatusEnum::Deleted->value], Test::class) ?: [];
 		}catch (Throwable $t){
 			throw new DatabaseException("Error getting candidate tests", previous: $t);
 		}
@@ -183,13 +184,13 @@ class CandidateRepository
 	 * @throws DatabaseException
 	 */
 	public static function getResumes(Candidate $candidate): array{
-		$sql = "SELECT f.id as fileId, f.created_by as createdBy, f.user_friendly_name as userFriendlyName, f.type, f.name
+		$sql = "SELECT f.id as fileId, f.created_by as createdBy, f.user_friendly_name as userFriendlyName, f.type, f.name, f.status
 				FROM file f
 				INNER JOIN candidate_resume cr ON cr.file_id = f.id
-				WHERE cr.candidate_id = ?";
+				WHERE cr.candidate_id = ? AND f.status != ?";
 		
 		try {
-			return Database::getInstance()->fetchMultiObject($sql, [$candidate->getId()], Resume::class) ?: [];
+			return Database::getInstance()->fetchMultiObject($sql, [$candidate->getId(), EntityStatusEnum::Deleted->value], Resume::class) ?: [];
 		}catch (Throwable $t){
 			throw new DatabaseException("Error getting candidate resumes", previous: $t);
 		}

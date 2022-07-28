@@ -6,6 +6,7 @@ use Throwable;
 use Modules\Resume\Domain\Resume;
 use ApplicationBase\Infra\Database;
 use Modules\Candidate\Domain\Candidate;
+use ApplicationBase\Infra\Enums\EntityStatusEnum;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 
 class ResumeRepository
@@ -42,13 +43,13 @@ class ResumeRepository
 	public static function getByResumeId(int $fileId): ?Resume
 	{
 		$sql = "SELECT f.id as fileId, f.created_by as createdBy, f.user_friendly_name as userFriendlyName,
-       				f.type, f.name
+       				f.type, f.name, f.status
 				FROM file f
 				LEFT JOIN candidate_resume cr ON cr.file_id = f.id
-				WHERE f.id = ?";
+				WHERE f.id = ? AND f.status != ?";
 		
 		try {
-			return Database::getInstance()->fetchObject($sql, [$fileId], Resume::class) ?: null;
+			return Database::getInstance()->fetchObject($sql, [$fileId, EntityStatusEnum::Deleted->value], Resume::class) ?: null;
 		} catch (Throwable $t) {
 			throw new DatabaseException("Error getting Test by file ID", previous: $t);
 		}

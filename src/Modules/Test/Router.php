@@ -12,7 +12,9 @@ use Modules\Test\Application\AddComment\AddCommentDTO;
 use Modules\Candidate\Application\Test\GetTest\GetTest;
 use Modules\Candidate\Application\Test\GetTest\GetTestDTO;
 use Modules\Candidate\Application\Test\AddTest\AddTestDTO;
+use Modules\Candidate\Application\Test\DeleteTest\DeleteTest;
 use Modules\Candidate\Application\Test\GetAllTests\GetAllTests;
+use Modules\Candidate\Application\Test\DeleteTest\DeleteTestDTO;
 use Modules\Candidate\Application\Test\GetAllTests\GetAllTestsDTO;
 
 class Router
@@ -39,6 +41,9 @@ class Router
 
 		$group->post("/{testId}", [AddTest::class, 'run'])
 		      ->add(new DtoBuilder(AddTestDTO::class));
+		
+		$group->delete("/{testId}", [DeleteTest::class, 'run'])
+		      ->add(new DtoBuilder(DeleteTestDTO::class));
 		
 		$group->get("/{testId}", [GetTest::class, 'run'])
 		      ->add(new DtoBuilder(GetTestDTO::class));

@@ -6,8 +6,7 @@ use Modules\File\Domain\FileAbstract;
 use Modules\Candidate\Domain\Candidate;
 use Modules\Resume\Infra\ResumeRepository;
 use Psr\Http\Message\UploadedFileInterface;
-use ApplicationBase\Infra\Exceptions\AppException;
-use ApplicationBase\Infra\Exceptions\RuntimeException;
+use ApplicationBase\Infra\Enums\EntityStatusEnum;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 
 class Resume extends FileAbstract
@@ -20,13 +19,25 @@ class Resume extends FileAbstract
 		?string                           $userFriendlyName = null,
 		?string                           $type = null,
 		?int                              $createdBy = null,
-		?string                           $name = null
+		?string                           $name = null,
+		string|EntityStatusEnum|null      $status = null
 	) {
-		parent::__construct(file: $file, name: $name);
+		parent::__construct(file: $file, name: $name, status: $status);
 		$this->fileId = $fileId;
 		$this->userFriendlyName = $userFriendlyName;
 		$this->type = $type;
 		$this->createdBy = $createdBy;
+	}
+	
+	/**
+	 * @param int $fileId
+	 *
+	 * @return null|FileAbstract
+	 * @throws DatabaseException
+	 */
+	public static function getByFileId(int $fileId): ?Resume
+	{
+		return ResumeRepository::getByResumeId($fileId);
 	}
 	
 	/**
@@ -57,16 +68,5 @@ class Resume extends FileAbstract
 	public function saveResume(Candidate $candidate): void
 	{
 		ResumeRepository::save($this, $candidate);
-	}
-	
-	/**
-	 * @param int $fileId
-	 *
-	 * @return null|FileAbstract
-	 * @throws DatabaseException
-	 */
-	public static function getByFileId(int $fileId): ?Resume
-	{
-		return ResumeRepository::getByResumeId($fileId);
 	}
 }

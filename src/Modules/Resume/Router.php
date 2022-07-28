@@ -10,7 +10,9 @@ use Modules\Candidate\Application\Resume\AddResume\AddResume;
 use Modules\Candidate\Application\Resume\GetResume\GetResume;
 use Modules\Candidate\Application\Resume\AddResume\AddResumeDTO;
 use Modules\Candidate\Application\Resume\GetResume\GetResumeDTO;
+use Modules\Candidate\Application\Resume\DeleteResume\DeleteResume;
 use Modules\Candidate\Application\Resume\GetAllResumes\GetAllResumes;
+use Modules\Candidate\Application\Resume\DeleteResume\DeleteResumeDTO;
 use Modules\Candidate\Application\Resume\GetAllResumes\GetAllResumesDTO;
 
 class Router
@@ -31,6 +33,9 @@ class Router
 	{
 		$group->post("/{resumeId}", [AddResume::class, 'run'])
 		      ->add(new DtoBuilder(AddResumeDTO::class));
+		
+		$group->delete("/{resumeId}", [DeleteResume::class, ''])
+		      ->add(new DtoBuilder(DeleteResumeDTO::class));
 
 		$group->get("/{resumeId}", [GetResume::class, 'run'])
 		      ->add(new DtoBuilder(GetResumeDTO::class));

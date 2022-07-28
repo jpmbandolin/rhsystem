@@ -38,4 +38,20 @@ class FileRepository
 			throw new DatabaseException("Error saving file into database", previous: $t);
 		}
 	}
+	
+	/**
+	 * @param FileAbstract $file
+	 *
+	 * @return void
+	 * @throws DatabaseException
+	 */
+	public static function updateFileStatus(FileAbstract $file): void{
+		$sql = "UPDATE file SET status = ? WHERE id = ?";
+		
+		try {
+			Database::getInstance()->prepareAndExecute($sql, [$file->getStatus(), $file->getFileId()]);
+		}catch (Throwable $t){
+			throw new DatabaseException("Error updating file status");
+		}
+	}
 }

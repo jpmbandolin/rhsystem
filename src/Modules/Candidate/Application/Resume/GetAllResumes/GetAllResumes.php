@@ -29,11 +29,12 @@ class GetAllResumes extends ControllerAbstract
 		return $this->replyRequest(
 			[
 				"d" => array_map(
-					static function (Resume $test): array {
+					static function (Resume $resume): array {
 						return [
-							"id"               => $test->getFileId(),
-							"userFriendlyName" => $test->getUserFriendlyName(),
-							"type"             => $test->getType(),
+							"id"               => $resume->getFileId(),
+							"userFriendlyName" => $resume->getUserFriendlyName(),
+							"type"             => $resume->getType(),
+							"status"           => $resume->getStatus()->value,
 						];
 					}, $candidate->getResumes()
 				),

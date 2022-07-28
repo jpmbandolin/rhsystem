@@ -7,6 +7,7 @@ use Modules\Test\Domain\Test;
 use ApplicationBase\Infra\Database;
 use Modules\Comment\Domain\Comment;
 use Modules\Candidate\Domain\Candidate;
+use ApplicationBase\Infra\Enums\EntityStatusEnum;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 
 class TestRepository
@@ -46,13 +47,13 @@ class TestRepository
 	 */
 	public static function getByFileId(int $fileId): ?Test{
 		$sql = "SELECT f.id as fileId, f.created_by as createdBy, f.user_friendly_name as userFriendlyName,
-       				f.type, f.name, ct.result
+       				f.type, f.name, ct.result, f.status
 				FROM file f
 				LEFT JOIN candidate_test ct ON ct.file_id = f.id
-				WHERE f.id = ?";
+				WHERE f.id = ? AND f.status != ?";
 
 		try {
-			return Database::getInstance()->fetchObject($sql, [$fileId], Test::class) ?: null;
+			return Database::getInstance()->fetchObject($sql, [$fileId, EntityStatusEnum::Deleted->value], Test::class) ?: null;
 		}catch (Throwable $t){
 			throw new DatabaseException("Error getting Test by file ID", previous: $t);
 		}
