@@ -106,15 +106,16 @@ class TestRepository
 	 */
 	public static function getComments(Test $test): array
 	{
-		$sql = "SELECT c.id, c.comment, c.author_id AS authorId
+		$sql = "SELECT c.id, c.comment, c.author_id AS authorId, c.status
 				FROM comment c
 				INNER JOIN candidate_test_comment tc ON tc.comment_id = c.id
-				WHERE tc.file_id = ?";
+				WHERE tc.file_id = ? AND c.status != ?";
 		
 		try {
 			return Database::getInstance()->fetchMultiObject(
 				$sql, [
 					$test->getFileId(),
+					EntityStatusEnum::Deleted->value
 				],  Comment::class
 			);
 		} catch (Throwable $t) {

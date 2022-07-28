@@ -30,13 +30,11 @@ class GetComments extends ControllerAbstract
 			throw new NotFoundException("The requested candidate was not found");
 		}
 		
-		$tests = $candidate->getTests();
-		
 		/**
 		 * @var bool|Test $test
 		 */
 		$test = self::find(
-			$tests, static function (Test $test) use ($dto): bool {
+			$candidate->getTests(), static function (Test $test) use ($dto): bool {
 				return $test->getFileId() === $dto->testId;
 			}
 		);
@@ -53,6 +51,7 @@ class GetComments extends ControllerAbstract
 							"id"       => $comment->getId(),
 							"authorId" => $comment->getAuthorId(),
 							"comment"  => $comment->getComment(),
+							"status"   => $comment->getStatus()->value
 						];
 					}, $test->getComments()
 				),

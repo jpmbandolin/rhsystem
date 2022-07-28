@@ -8,6 +8,8 @@ use Modules\Candidate\Application\Test\Comment\AddComment\AddComment;
 use Modules\Candidate\Application\Test\Comment\GetComments\GetComments;
 use Modules\Candidate\Application\Test\Comment\AddComment\AddCommentDTO;
 use Modules\Candidate\Application\Test\Comment\GetComments\GetCommentsDTO;
+use Modules\Candidate\Application\Test\Comment\DeleteComment\DeleteComment;
+use Modules\Candidate\Application\Test\Comment\DeleteComment\DeleteCommentDTO;
 
 class Router
 {
@@ -21,7 +23,10 @@ class Router
 	{
 		$group->post("", [AddComment::class, 'run'])
 		      ->add(new DtoBuilder(AddCommentDTO::class));
-		
+
+		$group->delete("/{commentId}", [DeleteComment::class, 'run'])
+		      ->add(new DtoBuilder(DeleteCommentDTO::class));
+
 		$group->get("", [GetComments::class, 'run'])
 			->add(new DtoBuilder(GetCommentsDTO::class));
 	}

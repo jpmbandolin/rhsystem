@@ -33,7 +33,7 @@ class Router
 	{
 		$group->post("/{resumeId}", [AddResume::class, 'run'])
 		      ->add(new DtoBuilder(AddResumeDTO::class));
-		
+
 		$group->delete("/{resumeId}", [DeleteResume::class, 'run'])
 		      ->add(new DtoBuilder(DeleteResumeDTO::class));
 

@@ -32,4 +32,20 @@ class CommentRepository
 			throw new DatabaseException("Error saving new comment", previous: $t);
 		}
 	}
+	
+	/**
+	 * @param Comment $comment
+	 *
+	 * @return void
+	 * @throws DatabaseException
+	 */
+	public static function updateStatus(Comment $comment): void{
+		$sql = "UPDATE comment SET status = ? WHERE id = ?";
+		
+		try {
+			Database::getInstance()->prepareAndExecute($sql, [$comment->getStatus()->value, $comment->getId()]);
+		}catch (Throwable $t){
+			throw new DatabaseException("Error updating comment status", previous: $t);
+		}
+	}
 }

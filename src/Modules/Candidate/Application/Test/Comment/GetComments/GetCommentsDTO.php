@@ -2,7 +2,9 @@
 
 namespace Modules\Candidate\Application\Test\Comment\GetComments;
 
-class GetCommentsDTO extends \ApplicationBase\Infra\Abstracts\DTOAbstract
+use ApplicationBase\Infra\Abstracts\DTOAbstract;
+
+class GetCommentsDTO extends DTOAbstract
 {
 	public int $candidateId;
 	public int $testId;
