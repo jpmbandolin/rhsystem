@@ -44,7 +44,7 @@ trait Actions
 			$this->createDir($fileDirectoryPath);
 		}
 
-		$newFolderName = substr($this->name, 2);
+		$newFolderName = substr($this->name, 0, 2);
 		$newFilePath = $fileDirectoryPath . $newFolderName;
 
 		if (!is_dir($newFilePath)){
