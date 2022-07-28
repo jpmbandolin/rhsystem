@@ -1,13 +1,13 @@
 <?php
 
-require_once './vendor/autoload.php';
+require_once '../vendor/autoload.php';
 
 use ApplicationBase\Infra\Slim\{Authenticator, Router, SlimCorsMiddleware, SlimErrorHandler};
 use DI\Bridge\Slim\Bridge;
 use DI\Container;
 use ApplicationBase\Infra\WhiteList\RedisWhiteList;
 
-$ENV = parse_ini_file('./env.ini', true);
+$ENV = parse_ini_file('../env.ini', true);
 
 $container = new Container;
 
