@@ -6,30 +6,55 @@ use Throwable;
 use Modules\Test\Domain\Test;
 use ApplicationBase\Infra\Database;
 use Modules\Comment\Domain\Comment;
+use Modules\Candidate\Domain\Candidate;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 
 class TestRepository
 {
 	/**
-	 * @param Test $test
+	 * @param Test      $test
+	 * @param Candidate $candidate
 	 *
 	 * @return void
 	 * @throws DatabaseException
 	 */
-	public static function save(Test $test): void
+	public static function save(Test $test, Candidate $candidate): void
 	{
-		$sql = "INSERT INTO candidate_test (candidate_id, file_id, result) VALUES (?, ?, ?)";
-		
+		$sql = "INSERT INTO candidate_test (candidate_id, file_id, result)
+				VALUES (?, ?, ?)
+				ON DUPLICATE KEY UPDATE
+				result = VALUES(result)";
+
 		try {
 			Database::getInstance()->prepareAndExecute(
 				$sql, [
-				    $test->getCandidateId(),
+				    $candidate->getId(),
 				    $test->getFileId(),
 				    $test->getResult(),
 			    ]
 			);
 		} catch (Throwable $t) {
 			throw new DatabaseException("Error saving candidate test", previous: $t);
+		}
+	}
+	
+	/**
+	 * @param int $fileId
+	 *
+	 * @return null|Test
+	 * @throws DatabaseException
+	 */
+	public static function getByFileId(int $fileId): ?Test{
+		$sql = "SELECT f.id as fileId, f.created_by as createdBy, f.user_friendly_name as userFriendlyName,
+       				f.type, f.name, ct.result
+				FROM file f
+				INNER JOIN candidate_test ct ON ct.file_id = f.id
+				WHERE id = ?";
+
+		try {
+			return Database::getInstance()->fetchObject($sql, [$fileId], Test::class) ?: null;
+		}catch (Throwable $t){
+			throw new DatabaseException("Error getting Test by file ID", previous: $t);
 		}
 	}
 	

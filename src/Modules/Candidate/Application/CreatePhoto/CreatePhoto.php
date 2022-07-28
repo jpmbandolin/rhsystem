@@ -37,13 +37,7 @@ class CreatePhoto extends ControllerAbstract
 			throw new NotFoundException('The requested candidate was not found');
 		}
 		
-		$files = $request->getUploadedFiles();
-		
-		$file = $files['file'];
-		
-		if ($file->getError() !== UPLOAD_ERR_OK) {
-			throw new RuntimeException("Error retrieving the uploaded file");
-		}
+		$file = self::getUploadedFile($request);
 		
 		$photo = new Photo(file: $file, userFriendlyName: $file->getClientFilename(), type: $file->getClientMediaType(), createdBy: $this->getJwtData()->id);
 		

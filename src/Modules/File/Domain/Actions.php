@@ -10,11 +10,13 @@ trait Actions
 {
 	/**
 	 * @param null|callable $repositoryMethod
+	 * @param mixed         ...$args
 	 *
 	 * @return int
 	 * @throws AppException
+	 * @throws RuntimeException
 	 */
-	public function save(?callable $repositoryMethod = null): int
+	public function save(?callable $repositoryMethod = null, ...$args): int
 	{
 		$this->saveInDisk();
 

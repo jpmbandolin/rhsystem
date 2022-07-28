@@ -116,18 +116,19 @@ class CandidateRepository
 	}
 	
 	/**
-	 * @param Test $test
+	 * @param Test      $test
+	 * @param Candidate $candidate
 	 *
 	 * @return void
 	 * @throws DatabaseException
 	 */
-	public static function addTest(Test $test): void{
+	public static function addTest(Test $test, Candidate $candidate): void{
 		$sql = "INSERT INTO candidate_test (file_id, candidate_id, result) VALUES (?, ?, ?)";
 		
 		try {
 			Database::getInstance()->prepareAndExecute($sql, [
 				$test->getFileId(),
-				$test->getCandidateId(),
+				$candidate->getId(),
 				$test->getResult()
 			]);
 		}catch (Throwable $t){

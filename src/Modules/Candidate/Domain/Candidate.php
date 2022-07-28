@@ -73,8 +73,7 @@ class Candidate
 	 * @throws DatabaseException
 	 */
 	public function addTest(Test $test): Candidate{
-		$test->setCandidateId($this->getId());
-		CandidateRepository::addTest($test);
+		CandidateRepository::addTest($test, $this);
 
 		return $this;
 	}

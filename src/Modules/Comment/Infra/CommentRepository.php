@@ -17,7 +17,7 @@ class CommentRepository
 	 */
 	public static function save(Comment $comment): int
 	{
-		$sql = "INSERT INTO comment (comment, author) VALUES (?, ?)";
+		$sql = "INSERT INTO comment (comment, author_id) VALUES (?, ?)";
 		
 		try {
 			Database::getInstance()->prepareAndExecute(
