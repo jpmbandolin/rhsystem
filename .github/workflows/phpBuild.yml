@@ -34,7 +34,7 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: echo Var
-      run: expr ${{ secrets.TEST }} + 4
+      run: expr ${{ secrets.TEST }} + 4 + 4
 
     - name: Deploy Via FTP
       uses: wangyucode/sftp-upload-action@v1.3.3
