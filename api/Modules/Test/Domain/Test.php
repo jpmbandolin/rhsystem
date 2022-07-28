@@ -44,7 +44,7 @@ class Test extends FileAbstract
 	{
 		return TestRepository::getByFileId($fileId);
 	}
-	
+
 	/**
 	 * @param Candidate $candidate
 	 *
