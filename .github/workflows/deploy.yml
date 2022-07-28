@@ -30,7 +30,10 @@ jobs:
         run: echo Hello, world!
 
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Deploy
         run: |
-          echo Add other actions to build,
+          apt-get update && apt-get install -yq unzip git libzip-dev libpng-dev zlib1g-dev git-ftp,
+          docker-php-ext-install gd zip,
+          curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer,
+          composer install -o --no-dev --ignore-platform-req=ext-redis --ignore-platform-req=ext-intl --ignore-platform-req=ext-fileinfo --ignore-platform-req=ext-gd
           echo test, and deploy your project.
