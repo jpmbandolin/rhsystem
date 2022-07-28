@@ -77,6 +77,12 @@ class Candidate
 
 		return $this;
 	}
+	
+	public function addResume(Resume $resume): Candidate{
+		CandidateRepository::addResume($resume, $this);
+
+		return $this;
+	}
 
 	/**
 	 * @param string $name

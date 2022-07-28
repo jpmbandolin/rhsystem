@@ -5,6 +5,7 @@ namespace Modules\Candidate\Infra;
 use Throwable;
 use Modules\Test\Domain\Test;
 use Modules\Photo\Domain\Photo;
+use Modules\Resume\Domain\Resume;
 use ApplicationBase\Infra\Database;
 use Modules\Candidate\Domain\Candidate;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
@@ -133,6 +134,26 @@ class CandidateRepository
 			]);
 		}catch (Throwable $t){
 			throw new DatabaseException("Error saving candidate test", previous: $t);
+		}
+	}
+	
+	/**
+	 * @param Resume    $resume
+	 * @param Candidate $candidate
+	 *
+	 * @return void
+	 * @throws DatabaseException
+	 */
+	public static function addResume(Resume $resume, Candidate $candidate): void{
+		$sql = "INSERT INTO candidate_resume (file_id, candidate_id) VALUES (?, ?)";
+
+		try {
+			Database::getInstance()->prepareAndExecute($sql, [
+				$resume->getFileId(),
+				$candidate->getId()
+			]);
+		}catch (Throwable $t){
+			throw new DatabaseException("Error saving candidate resume", previous: $t);
 		}
 	}
 }

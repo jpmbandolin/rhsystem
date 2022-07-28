@@ -48,8 +48,8 @@ class TestRepository
 		$sql = "SELECT f.id as fileId, f.created_by as createdBy, f.user_friendly_name as userFriendlyName,
        				f.type, f.name, ct.result
 				FROM file f
-				INNER JOIN candidate_test ct ON ct.file_id = f.id
-				WHERE id = ?";
+				LEFT JOIN candidate_test ct ON ct.file_id = f.id
+				WHERE f.id = ?";
 
 		try {
 			return Database::getInstance()->fetchObject($sql, [$fileId], Test::class) ?: null;

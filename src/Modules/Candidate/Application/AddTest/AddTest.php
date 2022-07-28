@@ -47,7 +47,6 @@ class AddTest extends ControllerAbstract
 		
 		try {
 			Database::getInstance()->beginTransaction();
-			//$test->patch($candidate);
 			$candidate->addTest($test);
 			Database::getInstance()->commit();
 		} catch (Throwable $t) {

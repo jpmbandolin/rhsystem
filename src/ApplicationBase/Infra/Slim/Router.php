@@ -36,6 +36,7 @@ class Router
 			"/user"         => \Modules\User\Router::class,
 			"/candidate"    => \Modules\Candidate\Router::class,
 			"/test"         => \Modules\Test\Router::class,
+			"/resume"       => \Modules\Resume\Router::class,
 		];
 		
 		foreach ($routeGroups as $index => $router) {

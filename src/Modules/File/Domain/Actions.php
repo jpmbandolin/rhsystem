@@ -22,7 +22,7 @@ trait Actions
 
 		$this->fileId = FileRepository::saveFile($this);
 		if (!is_null($repositoryMethod)){
-			$repositoryMethod($this);
+			$repositoryMethod(...$args);
 		}
 
 		return $this->fileId;
