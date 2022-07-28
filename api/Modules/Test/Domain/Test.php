@@ -16,7 +16,7 @@ class Test extends FileAbstract
 	 * @var Comment[]
 	 */
 	private array $comments = [];
-	
+
 	public function __construct(
 		?int                              $fileId = null,
 		string|UploadedFileInterface|null $file = null,
