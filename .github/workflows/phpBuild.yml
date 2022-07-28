@@ -36,7 +36,7 @@ jobs:
       with:
         username: ${{ secrets.SERVER_LOGIN }}
         host: ${{ secrets.SERVER_ADDRESS }}
+        port: 22
         password: ${{ secrets.SERVER_PASSWORD }}
-        ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-        local_path: './*'
-        remote_path: '/var/www/html'
+        localPath: './*'
+        remotePath: '/var/www/html'
