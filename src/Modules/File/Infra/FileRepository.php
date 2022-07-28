@@ -49,7 +49,7 @@ class FileRepository
 		$sql = "UPDATE file SET status = ? WHERE id = ?";
 		
 		try {
-			Database::getInstance()->prepareAndExecute($sql, [$file->getStatus(), $file->getFileId()]);
+			Database::getInstance()->prepareAndExecute($sql, [$file->getStatus()->value, $file->getFileId()]);
 		}catch (Throwable $t){
 			throw new DatabaseException("Error updating file status");
 		}
