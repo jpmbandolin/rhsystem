@@ -9,6 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 use ApplicationBase\Infra\Exceptions\NotFoundException;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 use ApplicationBase\Infra\Abstracts\ControllerAbstract;
+use ApplicationBase\Infra\Exceptions\PermissionException;
 use ApplicationBase\Infra\Exceptions\UnauthenticatedException;
 
 
@@ -20,10 +21,11 @@ class AddComment extends ControllerAbstract
 	 * @return ResponseInterface
 	 * @throws DatabaseException
 	 * @throws NotFoundException
-	 * @throws UnauthenticatedException
+	 * @throws UnauthenticatedException|PermissionException
 	 */
 	public function run(AddCommentDTO $dto): ResponseInterface
 	{
+		throw new PermissionException("Deprecated in favor of /candidate/{candidateId}/test/{testId}");
 		$test = Test::getByFileId($dto->id);
 		
 		if (is_null($test)) {

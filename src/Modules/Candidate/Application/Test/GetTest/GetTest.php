@@ -26,17 +26,17 @@ class GetTest extends ControllerAbstract
 	public function run(GetTestDTO $dto): ResponseInterface
 	{
 		$candidate = Candidate::getById($dto->candidateId);
-		
+
 		if (is_null($candidate)) {
 			throw new NotFoundException("The requested candidate was not found");
 		}
 
 		$tests = $candidate->getTests();
-		
+
 		$test = self::find($tests, static function(Test $test) use ($dto): bool{
 			return $test->getFileId() === $dto->testId;
 		});
-		
+
 		if ($test === false) {
 			throw new NotFoundException("This user does not have this test");
 		}

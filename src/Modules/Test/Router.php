@@ -35,16 +35,15 @@ class Router
 	 */
 	public function loadCandidateRoutes(RouteCollectorProxy $group): void
 	{
+		$group->group("/{testId}/comment", [\Modules\Comment\Router::class, 'loadCandidateTestRoutes']);
+
 		$group->post("/{testId}", [AddTest::class, 'run'])
-		      ->add(new DtoBuilder(AddTestDTO::class))
-		      ->add(new Authenticator);
+		      ->add(new DtoBuilder(AddTestDTO::class));
 		
 		$group->get("/{testId}", [GetTest::class, 'run'])
-		      ->add(new DtoBuilder(GetTestDTO::class))
-		      ->add(new Authenticator);
+		      ->add(new DtoBuilder(GetTestDTO::class));
 		
 		$group->get("", [GetAllTests::class, 'run'])
-		      ->add(new DtoBuilder(GetAllTestsDTO::class))
-		      ->add(new Authenticator);
+		      ->add(new DtoBuilder(GetAllTestsDTO::class));
 	}
 }

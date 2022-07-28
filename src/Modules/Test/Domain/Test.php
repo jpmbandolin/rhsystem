@@ -14,7 +14,7 @@ class Test extends FileAbstract
 	/**
 	 * @var Comment[]
 	 */
-	private array $comments;
+	private array $comments = [];
 	
 	public function __construct(
 		?int                              $fileId = null,
@@ -60,7 +60,7 @@ class Test extends FileAbstract
 	 */
 	public function getComments(bool $forceReloadFromDb = false): array
 	{
-		if (!isset($this->comments) || $forceReloadFromDb) {
+		if ($forceReloadFromDb || !count($this->comments)) {
 			$this->comments = TestRepository::getComments($this);
 		}
 		

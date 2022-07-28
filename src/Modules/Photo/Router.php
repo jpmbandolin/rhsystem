@@ -23,11 +23,9 @@ class Router
 	public function loadCandidateRoutes(RouteCollectorProxy $group): void
 	{
 		$group->post('', [CreatePhoto::class, 'run'])
-		      ->add(new DtoBuilder(CreatePhotoDTO::class))
-		      ->add(new Authenticator);
+		      ->add(new DtoBuilder(CreatePhotoDTO::class));
 		
 		$group->get('/{photoId}', [Get::class, 'run'])
-		      ->add(new DtoBuilder(GetDTO::class))
-		      ->add(new Authenticator);
+		      ->add(new DtoBuilder(GetDTO::class));
 	}
 }

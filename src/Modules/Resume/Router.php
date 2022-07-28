@@ -30,15 +30,12 @@ class Router
 	public function loadCandidateRoutes(RouteCollectorProxy $group): void
 	{
 		$group->post("/{resumeId}", [AddResume::class, 'run'])
-		      ->add(new DtoBuilder(AddResumeDTO::class))
-		      ->add(new Authenticator);
+		      ->add(new DtoBuilder(AddResumeDTO::class));
 
 		$group->get("/{resumeId}", [GetResume::class, 'run'])
-		      ->add(new DtoBuilder(GetResumeDTO::class))
-		      ->add(new Authenticator);
+		      ->add(new DtoBuilder(GetResumeDTO::class));
 
 		$group->get("", [GetAllResumes::class, 'run'])
-		      ->add(new DtoBuilder(GetAllResumesDTO::class))
-		      ->add(new Authenticator);
+		      ->add(new DtoBuilder(GetAllResumesDTO::class));
 	}
 }

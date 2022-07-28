@@ -21,8 +21,8 @@ class Router
 		      ->add(new DtoBuilder(GetDTO::class))
 		      ->add(new Authenticator);
 
-		$group->group('/{candidateId}/photo',   [\Modules\Photo\Router::class,  'loadCandidateRoutes']);
-		$group->group("/{candidateId}/resume",  [\Modules\Resume\Router::class, 'loadCandidateRoutes']);
-		$group->group("/{candidateId}/test",    [\Modules\Test\Router::class,   'loadCandidateRoutes']);
+		$group->group('/{candidateId}/photo',   [\Modules\Photo\Router::class,  'loadCandidateRoutes'])->add(new Authenticator);
+		$group->group("/{candidateId}/resume",  [\Modules\Resume\Router::class, 'loadCandidateRoutes'])->add(new Authenticator);
+		$group->group("/{candidateId}/test",    [\Modules\Test\Router::class,   'loadCandidateRoutes'])->add(new Authenticator);
 	}
 }
