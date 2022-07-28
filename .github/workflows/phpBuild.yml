@@ -31,12 +31,6 @@ jobs:
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
-    - name: Upload Vendor Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: vendor
-        path: vendor
-        retention-days: 1
     - name: Deploy Via Git-FTP
       uses: sebastianpopp/git-ftp-action@releases/v3
       with:
