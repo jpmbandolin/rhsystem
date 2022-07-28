@@ -33,11 +33,11 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
     - name: Deploy Via FTP
-      uses: Creepios/sftp-action@v1.0.3
+      uses: wangyucode/sftp-upload-action@v1.3.3
       with:
         username: ${{ secrets.SERVER_LOGIN }}
         host: ${{ secrets.SERVER_ADDRESS }}
         port: 22
         password: ${{ secrets.SERVER_PASSWORD }}
-        localPath: './*'
-        remotePath: '/var/www/html'
+        localDir: './*'
+        remoteDir: '/var/www/html'
