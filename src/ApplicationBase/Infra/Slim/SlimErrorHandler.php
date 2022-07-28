@@ -25,9 +25,10 @@ class SlimErrorHandler extends ErrorHandler
 	public function __invoke(ServerRequestInterface $request, Throwable $exception, bool $displayErrorDetails, bool $logErrors, bool $logErrorDetails): ResponseInterface
 	{
 		global $app, $ENV;
+
 		$payload = [];
 		$devEnvironment = $ENV['APPLICATION']['environment'] === "dev";
-		
+
 		if (!is_a($exception, AppException::class)){
 			$exception = new RuntimeException("Internal Server Error.", previous: $exception);
 		}
@@ -53,5 +54,4 @@ class SlimErrorHandler extends ErrorHandler
 			->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
 			->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
 	}
-
 }
