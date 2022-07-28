@@ -32,6 +32,10 @@ jobs:
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
+
+    - name: echo Var
+      run: echo ${{ secrets.TEST }} + 4
+
     - name: Deploy Via FTP
       uses: wangyucode/sftp-upload-action@v1.3.3
       with:
