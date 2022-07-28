@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Candidate\Application\AddResume;
+namespace Modules\Candidate\Application\Resume\AddResume;
 
 use Modules\Resume\Domain\Resume;
 use ApplicationBase\Infra\Database;

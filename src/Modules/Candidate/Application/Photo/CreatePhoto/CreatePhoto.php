@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Candidate\Application\CreatePhoto;
+namespace Modules\Candidate\Application\Photo\CreatePhoto;
 
 use Throwable;
 use Modules\Photo\Domain\Photo;
@@ -8,13 +8,12 @@ use ApplicationBase\Infra\Database;
 use Psr\Http\Message\ResponseInterface;
 use Modules\Candidate\Domain\Candidate;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use ApplicationBase\Infra\Abstracts\ControllerAbstract;
 use ApplicationBase\Infra\Exceptions\{AppException,
 	RuntimeException,
 	DatabaseException,
 	NotFoundException,
-	UnauthenticatedException
-};
-use ApplicationBase\Infra\Abstracts\ControllerAbstract;
+	UnauthenticatedException};
 
 class CreatePhoto extends ControllerAbstract
 {

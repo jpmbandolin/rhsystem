@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Candidate\Application\GetPhoto;
+namespace Modules\Candidate\Application\Photo\GetPhoto;
 
 use ApplicationBase\Infra\Abstracts\DTOAbstract;
 

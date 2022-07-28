@@ -6,13 +6,14 @@ use Slim\Routing\RouteCollectorProxy;
 use ApplicationBase\Infra\DtoBuilder;
 use Modules\Test\Application\Create\Create;
 use ApplicationBase\Infra\Slim\Authenticator;
-use Modules\Candidate\Application\GetTest\GetTest;
+use Modules\Candidate\Application\Test\AddTest\{AddTest};
 use Modules\Test\Application\AddComment\AddComment;
-use Modules\Candidate\Application\GetTest\GetTestDTO;
 use Modules\Test\Application\AddComment\AddCommentDTO;
-use Modules\Candidate\Application\GetAllTests\GetAllTests;
-use Modules\Candidate\Application\GetAllTests\GetAllTestsDTO;
-use Modules\Candidate\Application\AddTest\{AddTest, AddTestDTO};
+use Modules\Candidate\Application\Test\GetTest\GetTest;
+use Modules\Candidate\Application\Test\GetTest\GetTestDTO;
+use Modules\Candidate\Application\Test\AddTest\AddTestDTO;
+use Modules\Candidate\Application\Test\GetAllTests\GetAllTests;
+use Modules\Candidate\Application\Test\GetAllTests\GetAllTestsDTO;
 
 class Router
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Candidate\Application\GetResume;
+namespace Modules\Candidate\Application\Resume\GetResume;
 
 class GetResumeDTO extends \ApplicationBase\Infra\Abstracts\DTOAbstract
 {

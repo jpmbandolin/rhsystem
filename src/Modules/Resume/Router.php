@@ -6,12 +6,12 @@ use Slim\Routing\RouteCollectorProxy;
 use ApplicationBase\Infra\DtoBuilder;
 use ApplicationBase\Infra\Slim\Authenticator;
 use Modules\Resume\Application\Create\Create;
-use Modules\Candidate\Application\AddResume\AddResume;
-use Modules\Candidate\Application\GetResume\GetResume;
-use Modules\Candidate\Application\AddResume\AddResumeDTO;
-use Modules\Candidate\Application\GetResume\GetResumeDTO;
-use Modules\Candidate\Application\GetAllResumes\GetAllResumes;
-use Modules\Candidate\Application\GetAllResumes\GetAllResumesDTO;
+use Modules\Candidate\Application\Resume\AddResume\AddResume;
+use Modules\Candidate\Application\Resume\GetResume\GetResume;
+use Modules\Candidate\Application\Resume\AddResume\AddResumeDTO;
+use Modules\Candidate\Application\Resume\GetResume\GetResumeDTO;
+use Modules\Candidate\Application\Resume\GetAllResumes\GetAllResumes;
+use Modules\Candidate\Application\Resume\GetAllResumes\GetAllResumesDTO;
 
 class Router
 {

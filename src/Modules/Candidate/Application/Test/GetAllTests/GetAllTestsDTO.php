@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Candidate\Application\GetAllTests;
+namespace Modules\Candidate\Application\Test\GetAllTests;
 
 use ApplicationBase\Infra\Abstracts\DTOAbstract;
 

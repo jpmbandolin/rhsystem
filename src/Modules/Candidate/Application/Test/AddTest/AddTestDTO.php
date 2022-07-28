@@ -1,9 +1,8 @@
 <?php
 
-namespace Modules\Candidate\Application\AddTest;
+namespace Modules\Candidate\Application\Test\AddTest;
 
 use ApplicationBase\Infra\Abstracts\DTOAbstract;
-use ApplicationBase\Infra\Attributes\ArrayTypeAttribute;
 
 class AddTestDTO extends DTOAbstract
 {

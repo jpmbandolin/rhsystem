@@ -5,10 +5,10 @@ namespace Modules\Photo;
 use Slim\Routing\RouteCollectorProxy;
 use ApplicationBase\Infra\DtoBuilder;
 use ApplicationBase\Infra\Slim\Authenticator;
-use Modules\Candidate\Application\GetPhoto\{Get};
-use Modules\Candidate\Application\GetPhoto\GetDTO;
-use Modules\Candidate\Application\CreatePhoto\CreatePhoto;
-use Modules\Candidate\Application\CreatePhoto\CreatePhotoDTO;
+use Modules\Candidate\Application\Photo\GetPhoto\{Get};
+use Modules\Candidate\Application\Photo\GetPhoto\GetDTO;
+use Modules\Candidate\Application\Photo\CreatePhoto\CreatePhoto;
+use Modules\Candidate\Application\Photo\CreatePhoto\CreatePhotoDTO;
 
 class Router
 {

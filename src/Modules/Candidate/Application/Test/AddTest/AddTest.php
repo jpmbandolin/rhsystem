@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Candidate\Application\AddTest;
+namespace Modules\Candidate\Application\Test\AddTest;
 
 use Throwable;
 use Modules\Test\Domain\Test;
@@ -11,8 +11,7 @@ use ApplicationBase\Infra\Abstracts\ControllerAbstract;
 use ApplicationBase\Infra\Exceptions\{NotFoundException,
 	DatabaseException,
 	PermissionException,
-	UnauthenticatedException
-};
+	UnauthenticatedException};
 
 class AddTest extends ControllerAbstract
 {
