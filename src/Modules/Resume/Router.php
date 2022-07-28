@@ -7,7 +7,11 @@ use ApplicationBase\Infra\DtoBuilder;
 use ApplicationBase\Infra\Slim\Authenticator;
 use Modules\Resume\Application\Create\Create;
 use Modules\Candidate\Application\AddResume\AddResume;
+use Modules\Candidate\Application\GetResume\GetResume;
 use Modules\Candidate\Application\AddResume\AddResumeDTO;
+use Modules\Candidate\Application\GetResume\GetResumeDTO;
+use Modules\Candidate\Application\GetAllResumes\GetAllResumes;
+use Modules\Candidate\Application\GetAllResumes\GetAllResumesDTO;
 
 class Router
 {
@@ -25,11 +29,16 @@ class Router
 	 */
 	public function loadCandidateRoutes(RouteCollectorProxy $group): void
 	{
-		$group->post("", [Create::class, 'run'])
-		      ->add(new Authenticator);
-		
-		$group->get("[/{resumeId}]", [AddResume::class, 'run'])
+		$group->post("/{resumeId}", [AddResume::class, 'run'])
 		      ->add(new DtoBuilder(AddResumeDTO::class))
-		      ->add(new Authenticator); //getNewResume
+		      ->add(new Authenticator);
+
+		$group->get("/{resumeId}", [GetResume::class, 'run'])
+		      ->add(new DtoBuilder(GetResumeDTO::class))
+		      ->add(new Authenticator);
+
+		$group->get("", [GetAllResumes::class, 'run'])
+		      ->add(new DtoBuilder(GetAllResumesDTO::class))
+		      ->add(new Authenticator);
 	}
 }

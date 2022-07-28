@@ -11,15 +11,17 @@ use ApplicationBase\Infra\Exceptions\DatabaseException;
 
 class Candidate
 {
+	use Actions;
+
 	/**
 	 * @var Test[]
 	 */
-	private array $test = [];
+	private array $tests = [];
 	
 	/**
 	 * @var Resume[]
 	 */
-	private array $resume = [];
+	private array $resumes = [];
 	
 	/**
 	 * @var Comment[]
@@ -38,62 +40,7 @@ class Candidate
 		private ?int    $id = null,
 	) {}
 	
-	/**
-	 * @return null|Photo
-	 * @throws DatabaseException
-	 */
-	public function getPhoto(): ?Photo{
-		return $this->photo = CandidateRepository::getPhoto($this);
-	}
 	
-	/**
-	 * @param int $id
-	 *
-	 * @return null|Candidate
-	 * @throws DatabaseException
-	 */
-	public static function getById(int $id): ?Candidate
-	{
-		return CandidateRepository::getById($id);
-	}
-	
-	/**
-	 * @return  Candidate[]
-	 *
-	 * @throws DatabaseException
-	 */
-	public static function getAll(): array{
-		return CandidateRepository::getAll();
-	}
-	
-	/**
-	 * @param Test $test
-	 *
-	 * @return Candidate
-	 * @throws DatabaseException
-	 */
-	public function addTest(Test $test): Candidate{
-		CandidateRepository::addTest($test, $this);
-
-		return $this;
-	}
-	
-	public function addResume(Resume $resume): Candidate{
-		CandidateRepository::addResume($resume, $this);
-
-		return $this;
-	}
-
-	/**
-	 * @param string $name
-	 *
-	 * @return Candidate[]
-	 * @throws DatabaseException
-	 */
-	public static function searchByName(string $name): array
-	{
-		return CandidateRepository::searchByName($name);
-	}
 
 	/**
 	 * @return null|int
@@ -163,51 +110,28 @@ class Candidate
 	
 	/**
 	 * @return Resume[]
+	 * @throws DatabaseException
 	 */
-	public function getResume(): array
+	public function getResumes(): array
 	{
-		return $this->resume;
-	}
-	
-	/**
-	 * @param Resume ...$resume
-	 *
-	 * @return Candidate
-	 */
-	public function setResume(Resume ...$resume): Candidate
-	{
-		$this->resume = $resume;
-		return $this;
-	}
-	
-	/**
-	 * @param null|Photo $photo
-	 *
-	 * @return Candidate
-	 */
-	public function setPhoto(?Photo $photo): Candidate
-	{
-		$this->photo = $photo;
-		return $this;
+		if (!count($this->resumes)){
+			$this->resumes = CandidateRepository::getResumes($this);
+		}
+
+		return $this->resumes;
 	}
 	
 	/**
 	 * @return Test[]
+	 * @throws DatabaseException
 	 */
-	public function getTest(): array
+	public function getTests(): array
 	{
-		return $this->test;
-	}
-	
-	/**
-	 * @param Test ...$test
-	 *
-	 * @return Candidate
-	 */
-	public function setTest(Test ...$test): Candidate
-	{
-		$this->test = $test;
-		return $this;
+		if(!count($this->tests)){
+			$this->tests = CandidateRepository::getTests($this);
+		}
+
+		return $this->tests;
 	}
 	
 	/**
@@ -216,17 +140,6 @@ class Candidate
 	public function getId(): ?int
 	{
 		return $this->id;
-	}
-	
-	/**
-	 * @param int $id
-	 *
-	 * @return Candidate
-	 */
-	public function setId(int $id): Candidate
-	{
-		$this->id = $id;
-		return $this;
 	}
 	
 	/**

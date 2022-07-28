@@ -156,4 +156,42 @@ class CandidateRepository
 			throw new DatabaseException("Error saving candidate resume", previous: $t);
 		}
 	}
+	
+	/**
+	 * @param Candidate $candidate
+	 *
+	 * @return Test[]
+	 * @throws DatabaseException
+	 */
+	public static function getTests(Candidate $candidate): array{
+		$sql = "SELECT f.id as fileId, f.created_by as createdBy, f.user_friendly_name as userFriendlyName, f.type, f.name, ct.result
+				FROM file f
+				INNER JOIN candidate_test ct ON ct.file_id = f.id
+				WHERE ct.candidate_id = ?";
+
+		try {
+			return Database::getInstance()->fetchMultiObject($sql, [$candidate->getId()], Test::class) ?: [];
+		}catch (Throwable $t){
+			throw new DatabaseException("Error getting candidate tests", previous: $t);
+		}
+	}
+	
+	/**
+	 * @param Candidate $candidate
+	 *
+	 * @return Resume[]
+	 * @throws DatabaseException
+	 */
+	public static function getResumes(Candidate $candidate): array{
+		$sql = "SELECT f.id as fileId, f.created_by as createdBy, f.user_friendly_name as userFriendlyName, f.type, f.name
+				FROM file f
+				INNER JOIN candidate_resume cr ON cr.file_id = f.id
+				WHERE cr.candidate_id = ?";
+		
+		try {
+			return Database::getInstance()->fetchMultiObject($sql, [$candidate->getId()], Resume::class) ?: [];
+		}catch (Throwable $t){
+			throw new DatabaseException("Error getting candidate resumes", previous: $t);
+		}
+	}
 }
