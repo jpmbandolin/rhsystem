@@ -37,6 +37,8 @@ jobs:
         server: ${{ secrets.SERVER_ADDRESS }}
         username: ${{ secrets.SERVER_LOGIN }}
         password: ${{ secrets.SERVER_PASSWORD }}
-        ssh_private_key: ${{ secrets.SSH_KEY }}
+        ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
         local_path: "./*"
         remote_path: "/var/www/html"
+        sftp_only: true
+        delete_remote_files: true
