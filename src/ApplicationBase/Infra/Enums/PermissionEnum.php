@@ -7,6 +7,7 @@ enum PermissionEnum: string implements EnumInterface
 	case UserRead   = 'user:read';
 	case UserEdit   = 'user:edit';
 	case UserCreate = 'user:create';
+	case UserAttend = "user:attend";
 
 	/**
 	 * @return string
@@ -25,7 +26,8 @@ enum PermissionEnum: string implements EnumInterface
 		return match ($value){
 			self::UserRead   => "user:read",
 			self::UserEdit   => "user:edit",
-			self::UserCreate => "user:create"
+			self::UserCreate => "user:create",
+			self::UserAttend => "user:attend"
 		};
 	}
 }

@@ -6,7 +6,7 @@ use ApplicationBase\Infra\Exceptions\NotFoundException;
 
 final class PaginatedData
 {
-	private int $totalPages;
+	private readonly int $totalPages;
 	private array $paginatedData;
 
 	/**
@@ -15,7 +15,7 @@ final class PaginatedData
 	 * @param int   $pageSize
 	 * @throws NotFoundException
 	 */
-	public function __construct(array $responseData, private int $page = 1, int $pageSize = 10){
+	public function __construct(array $responseData, private readonly int $page = 1, int $pageSize = 10){
 		$this->totalPages = (int) ceil(count($responseData)/$pageSize);
 
 		if ($this->page > $this->totalPages){
@@ -35,7 +35,8 @@ final class PaginatedData
 	/**
 	 * @return int
 	 */
-	public function getPage(){
+	public function getPage(): int
+	{
 		return $this->page;
 	}
 

@@ -94,10 +94,12 @@ paths:
           description: Returned when the token doesn't have the user:read permission
   /user/{id}:
     get:
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: id
-          required: false
+          required: true
           schema:
             type: integer
         - in: query

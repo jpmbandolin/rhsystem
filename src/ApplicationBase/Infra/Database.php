@@ -2,7 +2,6 @@
 
 namespace ApplicationBase\Infra;
 
-use ApplicationBase\Infra\Enums\EnumInterface;
 use ApplicationBase\Infra\Enums\PermissionEnum;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 use PDOStatement;

@@ -2,9 +2,10 @@
 
 require_once './vendor/autoload.php';
 
-use ApplicationBase\Infra\Slim\{Router, SlimCorsMiddleware, SlimErrorHandler};
+use ApplicationBase\Infra\Slim\{Authenticator, Router, SlimCorsMiddleware, SlimErrorHandler};
 use DI\Bridge\Slim\Bridge;
 use DI\Container;
+use ApplicationBase\Infra\WhiteList\RedisWhiteList;
 
 $ENV = parse_ini_file('./env.ini', true);
 
@@ -16,6 +17,7 @@ $app->addRoutingMiddleware();
 $app->addBodyParsingMiddleware();
 $app->add(new SlimCorsMiddleware);
 
+Authenticator::setWhiteListHandler(new RedisWhiteList);
 (new Router)($app);
 
 $errorMiddleware = $app->addErrorMiddleware(false, false, false);

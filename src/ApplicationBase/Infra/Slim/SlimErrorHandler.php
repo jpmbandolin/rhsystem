@@ -8,6 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Handlers\ErrorHandler;
 use Throwable;
+use ApplicationBase\Infra\Exceptions\RuntimeException;
 
 class SlimErrorHandler extends ErrorHandler
 {
@@ -24,27 +25,20 @@ class SlimErrorHandler extends ErrorHandler
 	public function __invoke(ServerRequestInterface $request, Throwable $exception, bool $displayErrorDetails, bool $logErrors, bool $logErrorDetails): ResponseInterface
 	{
 		global $app, $ENV;
-		$status = 500;
 		$payload = [];
 		$devEnvironment = $ENV['APPLICATION']['environment'] === "dev";
+		
+		if (!is_a($exception, AppException::class)){
+			$exception = new RuntimeException("Internal Server Error.", previous: $exception);
+		}
 
-		if (is_a($exception, AppException::class)){
-			$status = $exception->getHttpStatusCode();
-			if ($devEnvironment){
-				$payload['error'] = $exception->getDetailedErrorMessage();
-				$payload['errorTrace'] = $exception->getTraceAsString();
-				$payload['file'] = $exception->getFile();
-				$payload['line'] = $exception->getLine();
-			}else{
-				$payload['error'] = $exception->getMessage();
-			}
-		}else if ($devEnvironment){
-			$payload['error'] =	$exception->getMessage();
+		if ($devEnvironment){
+			$payload['error'] = $exception->getDetailedErrorMessage();
 			$payload['errorTrace'] = $exception->getTraceAsString();
 			$payload['file'] = $exception->getFile();
 			$payload['line'] = $exception->getLine();
 		}else{
-			$payload['error'] = "Internal Server Error.";
+			$payload['error'] = $exception->getMessage();
 		}
 
 		$response = $app->getResponseFactory()->createResponse();
@@ -53,7 +47,8 @@ class SlimErrorHandler extends ErrorHandler
 		);
 
 		return $response
-			->withStatus($status)
+			->withStatus($exception->getHttpStatusCode())
+			->withHeader('Content-Type', 'application/json')
 			->withHeader('Access-Control-Allow-Origin', '*')
 			->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
 			->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');

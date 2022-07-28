@@ -15,7 +15,7 @@ class ArrayTypeAttribute
 	 * @throws RuntimeException
 	 */
 	public function __construct(private string $propertyType, private bool $isPrimitive = false){
-		if (!$this->isPrimitive && (!class_exists($this->propertyType) || !is_subclass_of(DTOAbstract::class, $this->propertyType))){
+		if (!$this->isPrimitive && (!class_exists($this->propertyType) || !is_a($this->propertyType,DTOAbstract::class, true))){
 			throw new RuntimeException('All propertyTypes must be an existing class and an instance of ' . DTOAbstract::class);
 		}
 	}

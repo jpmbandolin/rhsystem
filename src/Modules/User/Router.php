@@ -4,7 +4,7 @@
 namespace Modules\User;
 
 
-use ApplicationBase\Infra\DTOConstructor;
+use ApplicationBase\Infra\DtoBuilder;
 use ApplicationBase\Infra\Slim\Authenticator;
 use Modules\User\Application\Login\{Login, LoginDTO};
 use Modules\User\Application\Create\{Create, CreateDTO};
@@ -15,19 +15,20 @@ use Slim\Routing\RouteCollectorProxy;
 
 class Router
 {
-	public function __invoke(RouteCollectorProxy $group){
+	public function __invoke(RouteCollectorProxy $group): void
+	{
 		$group->post('', [Create::class, 'run'])
-			->add(new DTOConstructor(CreateDTO::class))
+			->add(new DtoBuilder(CreateDTO::class))
 			->add(new Authenticator);
 
 		$group->post('/login', [Login::class, 'run'])
-			->add(new DTOConstructor(LoginDTO::class));
+			->add(new DtoBuilder(LoginDTO::class));
 
 		$group->post('/logout', [Logout::class, 'run'])
 			->add(new Authenticator);
 
 		$group->get('[/{id}]', [Get::class, 'run'])
-			->add(new DTOConstructor(GetDTO::class))
+			->add(new DtoBuilder(GetDTO::class))
 			->add(new Authenticator);
 	}
 }

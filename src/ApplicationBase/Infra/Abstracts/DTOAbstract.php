@@ -29,7 +29,7 @@ abstract class DTOAbstract
 			if (is_object($this->{$propertyName})){
 				$this->{$propertyName}->validateDTO();
 			}else if (is_array($this->{$propertyName})){
-				if (in_array(ArrayTypeAttribute::class, $propertyAttributeNames)){
+				if (in_array(ArrayTypeAttribute::class, $propertyAttributeNames, true)){
 					$atributeInstance = $property->getAttributes(ArrayTypeAttribute::class)[0]->newInstance();
 					if (!$atributeInstance->getIsPrimitive()){
 						foreach ($this->{$propertyName} as $dtoInstance){
@@ -37,7 +37,7 @@ abstract class DTOAbstract
 						}
 					}
 				}
-			}else if (is_null($this->{$propertyName}) && !in_array(OptionalAttribute::class, $propertyAttributeNames)) {
+			}else if (is_null($this->{$propertyName}) && !in_array(OptionalAttribute::class, $propertyAttributeNames, true)) {
 				throw new InvalidValueException('Missing parameter');
 			}
 		}

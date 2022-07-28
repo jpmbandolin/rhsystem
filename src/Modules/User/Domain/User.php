@@ -3,48 +3,62 @@
 
 namespace Modules\User\Domain;
 
-use ApplicationBase\Infra\Enums\PermissionEnum;
-use ApplicationBase\Infra\Exceptions\{DatabaseException, InvalidValueException};
-use ApplicationBase\Infra\JWT;
 use ApplicationBase\Infra\Vo\Email;
-use Modules\User\Infra\UserRepository;
+use ApplicationBase\Infra\Exceptions\{InvalidValueException};
+use ApplicationBase\Infra\Enums\EntityStatusEnum;
 
 class User
 {
+	use Actions;
+	
 	private ?Email $email;
+	
+	private ?EntityStatusEnum $status;
+	
 	/**
-	 * @var PermissionEnum[]
-	 */
-	private array $permissions = [];
-
-	/**
-	 * @param int|null $id
-	 * @param string|null $name
-	 * @param string|null $password
-	 * @param string|Email|null $email
+	 * @param int|null                     $id
+	 * @param string|null                  $name
+	 * @param string|null                  $password
+	 * @param string|Email|null            $email
+	 * @param null|string|EntityStatusEnum $status
+	 *
 	 * @throws InvalidValueException
 	 */
 	public function __construct(
-		private ?int $id = null,
-		private ?string $name = null,
-		private ?string $password = null,
-		string|Email|null $email = null
-	){
+		private ?int               $id = null,
+		private ?string            $name = null,
+		private ?string            $password = null,
+		string|Email|null          $email = null,
+		string|EntityStatusEnum|null $status = null
+	) {
 		$this->setEmail($email);
+
+		if (is_string($status)){
+			$this->status = EntityStatusEnum::tryFrom($status) ?? throw new InvalidValueException("Invalid value supplied for user status.");
+		}else{
+			$this->status = $status;
+		}
 	}
 
 	/**
-	 * @return PermissionEnum[]
-	 * @throws DatabaseException
+	 * @return EntityStatusEnum
 	 */
-	public function getPermissions():array{
-		if (!count($this->permissions)){
-			$this->permissions = UserRepository::getPermissions($this);
-		}
-
-		return $this->permissions;
+	public function getStatus(): EntityStatusEnum
+	{
+		return $this->status;
 	}
-
+	
+	/**
+	 * @param EntityStatusEnum $status
+	 *
+	 * @return User
+	 */
+	public function setStatus(EntityStatusEnum $status): User
+	{
+		$this->status = $status;
+		return $this;
+	}
+	
 	/**
 	 * @return string|null
 	 */
@@ -52,72 +66,24 @@ class User
 	{
 		return $this->email;
 	}
-
+	
 	/**
 	 * @param string|Email|null $email
+	 *
 	 * @return User
 	 * @throws InvalidValueException
 	 */
 	public function setEmail(string|Email|null $email): User
 	{
-		if (is_string($email)){
+		if (is_string($email)) {
 			$this->email = new Email($email);
-		}else{
+		} else {
 			$this->email = $email;
 		}
-
+		
 		return $this;
 	}
-
-	/**
-	 * @return $this
-	 * @throws DatabaseException
-	 */
-	public function save():self{
-		return $this->setId(UserRepository::save($this));
-	}
-
-	/**
-	 * @param int $id
-	 * @return static|null
-	 * @throws DatabaseException
-	 */
-	public static function getById(int $id): ?self{
-		return UserRepository::getById($id);
-	}
-
-	/**
-	 * @param string $login
-	 * @return static|null
-	 * @throws DatabaseException
-	 */
-	public static function getByLogin(string $login): ?self{
-		return UserRepository::getByLogin($login);
-	}
-
-	/**
-	 * @return User[]
-	 * @throws DatabaseException
-	 */
-	public static function getAll(): array{
-		return UserRepository::getAll();
-	}
-
-	/**
-	 * @return string
-	 * @throws DatabaseException
-	 */
-	public function getJWT():string{
-		return JWT::generateJWT([
-			"id"            => $this->getId(),
-			"name"          => $this->getName(),
-			"email"         => $this->getEmail(),
-			"permissions"   => array_map(static function (PermissionEnum $enum){
-				return $enum->value;
-			}, $this->getPermissions())
-		]);
-	}
-
+	
 	/**
 	 * @return int|null
 	 */
@@ -125,9 +91,10 @@ class User
 	{
 		return $this->id;
 	}
-
+	
 	/**
 	 * @param int|null $id
+	 *
 	 * @return User
 	 */
 	public function setId(?int $id): User
@@ -135,7 +102,7 @@ class User
 		$this->id = $id;
 		return $this;
 	}
-
+	
 	/**
 	 * @return string
 	 */
@@ -143,9 +110,10 @@ class User
 	{
 		return $this->name;
 	}
-
+	
 	/**
 	 * @param string $name
+	 *
 	 * @return User
 	 */
 	public function setName(string $name): User
@@ -153,7 +121,7 @@ class User
 		$this->name = $name;
 		return $this;
 	}
-
+	
 	/**
 	 * @return string
 	 */
@@ -161,9 +129,10 @@ class User
 	{
 		return $this->password;
 	}
-
+	
 	/**
 	 * @param string $password
+	 *
 	 * @return User
 	 */
 	public function setPassword(string $password): User
@@ -171,5 +140,5 @@ class User
 		$this->password = $password;
 		return $this;
 	}
-
+	
 }

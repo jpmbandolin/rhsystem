@@ -3,8 +3,7 @@
 
 namespace Modules\User\Application\Login;
 
-
-use ApplicationBase\Infra\{Abstracts\ControllerAbstract, Redis};
+use ApplicationBase\Infra\{Abstracts\ControllerAbstract, Slim\Authenticator};
 use ApplicationBase\Infra\Exceptions\{DatabaseException, UnauthenticatedException};
 use DI\NotFoundException;
 use Modules\User\Domain\User;
@@ -33,7 +32,9 @@ class Login extends ControllerAbstract
 		global $ENV;
 		$jwt = $user->getJWT();
 
-		Redis::set($jwt, true, $ENV['JWT']['expires_at']);
+		if (!is_null($whiteList = Authenticator::getWhiteList())){
+			$whiteList::addToWhiteList($jwt, true, $ENV['JWT']['expires_at']);
+		}
 
 		return $this->replyRequest(body: [
 			"token"=>$user->getJWT()

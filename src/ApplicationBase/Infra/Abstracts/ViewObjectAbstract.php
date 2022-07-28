@@ -4,6 +4,6 @@ namespace ApplicationBase\Infra\Abstracts;
 
 abstract class ViewObjectAbstract
 {
-	public abstract function __toString();
+	abstract public function __toString();
 
 }

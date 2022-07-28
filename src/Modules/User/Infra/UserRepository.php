@@ -16,7 +16,7 @@ class UserRepository
 	 * @throws DatabaseException
 	 */
 	public static function getById(int $id):?User{
-		$sql = "SELECT id, name, email, password FROM user WHERE id = ?";
+		$sql = "SELECT id, name, email, password, status FROM user WHERE id = ?";
 
 		try {
 			return Database::getInstance()->fetchObject($sql, [$id], User::class) ?: null;
@@ -31,7 +31,7 @@ class UserRepository
 	 * @throws DatabaseException
 	 */
 	public static function getByLogin(string $login): ?User{
-		$sql = "SELECT id, name, email, password FROM user WHERE (name = ? OR email = ?)";
+		$sql = "SELECT id, name, email, password, status FROM user WHERE (name = ? OR email = ?)";
 
 		try {
 			return Database::getInstance()->fetchObject($sql, [$login, $login], User::class) ?: null;
@@ -41,28 +41,11 @@ class UserRepository
 	}
 
 	/**
-	 * @param User $user
-	 * @return PermissionEnum[]
-	 * @throws DatabaseException
-	 */
-	public static function getPermissions(User $user):array{
-		$sql = "SELECT name 
-				FROM user_permission
-				WHERE user_id = ?";
-
-		try {
-			return Database::getInstance()->fetchMultiObject(sql: $sql, args: [$user->getId()], class_name: PermissionEnum::class) ?: [];
-		}catch (Throwable $t){
-			throw new DatabaseException(message: "Error fetching user permissions", previous: $t);
-		}
-	}
-
-	/**
 	 * @return User[]
 	 * @throws DatabaseException
 	 */
 	public static function getAll(): array{
-		$sql = "SELECT id, name, email, password FROM user";
+		$sql = "SELECT id, name, email, password, status FROM user";
 
 		try {
 			return Database::getInstance()->fetchMultiObject(sql: $sql, class_name: User::class) ?: [];
@@ -77,20 +60,22 @@ class UserRepository
 	 * @throws DatabaseException
 	 */
 	public static function save(User $user):int{
-		$sql = "INSERT INTO user (id, name, password, email) 
-				VALUES (?,?,?,?)
+		$sql = "INSERT INTO user (id, name, password, email, status)
+				VALUES (?,?,?,?,?)
 				ON DUPLICATE KEY UPDATE 
 				id			= LAST_INSERT_ID(id),
 				name		= VALUES(name),
 				email		= VALUES(email),
-				password	= VALUES(password)";
+				password	= VALUES(password),
+				status		= VALUES(status)";
 
 		try {
 			Database::getInstance()->prepareAndExecute($sql, [
 				$user->getId(),
 				$user->getName(),
 				$user->getPassword(),
-				$user->getEmail()
+				$user->getEmail(),
+				$user->getStatus()->value
 			]);
 
 			return Database::getInstance()->lastInsertId();
