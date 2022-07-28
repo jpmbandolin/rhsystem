@@ -13,6 +13,10 @@ class Router
 {
 	public function __invoke(RouteCollectorProxy $group): void
 	{
+		$group->group('/{candidateId}/photo',   [\Modules\Photo\Router::class,  'loadCandidateRoutes'])->add(new Authenticator);
+		$group->group("/{candidateId}/resume",  [\Modules\Resume\Router::class, 'loadCandidateRoutes'])->add(new Authenticator);
+		$group->group("/{candidateId}/test",    [\Modules\Test\Router::class,   'loadCandidateRoutes']);
+
 		$group->post('', [Create::class, 'run'])
 		      ->add(new DtoBuilder(CreateDTO::class))
 		      ->add(new Authenticator);
@@ -20,9 +24,5 @@ class Router
 		$group->get('[/{id}]', [Get::class, 'run'])
 		      ->add(new DtoBuilder(GetDTO::class))
 		      ->add(new Authenticator);
-
-		$group->group('/{candidateId}/photo',   [\Modules\Photo\Router::class,  'loadCandidateRoutes'])->add(new Authenticator);
-		$group->group("/{candidateId}/resume",  [\Modules\Resume\Router::class, 'loadCandidateRoutes'])->add(new Authenticator);
-		$group->group("/{candidateId}/test",    [\Modules\Test\Router::class,   'loadCandidateRoutes'])->add(new Authenticator);
 	}
 }
