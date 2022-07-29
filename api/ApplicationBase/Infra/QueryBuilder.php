@@ -24,8 +24,10 @@ class QueryBuilder
 		private readonly array  $args = [],
 		private readonly bool   $log = true
 	) {
-		$this->executionPosition = self::$executionOrder;
-		self::$executionOrder++;
+		if ($this->log){
+			$this->executionPosition = self::$executionOrder;
+			self::$executionOrder++;
+		}
 	}
 	
 	/**
