@@ -16,13 +16,19 @@ class QueryBuilder
 	 * @param array  $args
 	 * @param bool   $log
 	 *
-	 * @throws DatabaseException
 	 */
 	public function __construct(
 		private readonly string $sql,
 		private readonly array  $args = [],
 		private readonly bool   $log = true
 	) {
+	
+	}
+	
+	/**
+	 * @throws DatabaseException
+	 */
+	public function __destruct(){
 		if ($this->log) {
 			$this->log();
 		}
@@ -59,7 +65,6 @@ class QueryBuilder
 	 * @param bool   $log
 	 *
 	 * @return QueryBuilder
-	 * @throws DatabaseException
 	 */
 	public static function create(string $sql, array $args = [], bool $log = true): QueryBuilder
 	{
