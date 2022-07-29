@@ -16,7 +16,7 @@ $dbParams = [
 	'dbname'    => $env["DATABASE"]["database"],
 	'user'      => $env["DATABASE"]["user"],
 	'password'  => $env["DATABASE"]["password"],
-	'host'      => $env["MIGRATIONS"]["db_host"],
+	'host'      => $env["MIGRATIONS"]["db_host"] ?? $env["DATABASE"]["host"],
 	'driver'    => 'pdo_mysql'
 ];
 
