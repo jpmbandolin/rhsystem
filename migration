@@ -13,10 +13,10 @@ use Symfony\Component\Console\Application;
 $env = parse_ini_file("./env.ini", true);
 
 $dbParams = [
-	'dbname'    => $_ENV["database"]    ?? $env["DATABASE"]["database"],
-	'user'      => $_ENV["user"]        ?? $env["DATABASE"]["user"],
-	'password'  => $_ENV["pass"]        ?? $env["DATABASE"]["password"],
-	'host'      => $_ENV["host"]        ?? $env["DATABASE"]["host"],
+	'dbname'    => $env["DATABASE"]["database"],
+	'user'      => $env["DATABASE"]["user"],
+	'password'  => $env["DATABASE"]["password"],
+	'host'      => $env["DATABASE"]["host"],
 	'driver'    => 'pdo_mysql'
 ];
 
