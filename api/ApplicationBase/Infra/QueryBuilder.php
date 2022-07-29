@@ -10,7 +10,9 @@ use ApplicationBase\Infra\Abstracts\ControllerAbstract;
 class QueryBuilder
 {
 	private static string $requestId;
-	
+	private static int $executionOrder = 1;
+	private int $executionPosition;
+
 	/**
 	 * @param string $sql
 	 * @param array  $args
@@ -22,7 +24,8 @@ class QueryBuilder
 		private readonly array  $args = [],
 		private readonly bool   $log = true
 	) {
-	
+		$this->executionPosition = self::$executionOrder;
+		self::$executionOrder++;
 	}
 	
 	/**
@@ -40,8 +43,8 @@ class QueryBuilder
 	 */
 	private function log(): void
 	{
-		$sql = "INSERT INTO sql_logs (request_id, first_clause, target_table, query, json_encoded_args, executed_by)
-				VALUES (?, ?, ?, ?, ?, ?)";
+		$sql = "INSERT INTO sql_logs (request_id, first_clause, target_table, query, json_encoded_args, executed_by, execution_order)
+				VALUES (?, ?, ?, ?, ?, ?, ?)";
 		
 		try {
 			Database::getInstance()->prepareAndExecute(
@@ -52,6 +55,7 @@ class QueryBuilder
 					$this->sql,
 					json_encode($this->args, JSON_THROW_ON_ERROR),
 					self::getCurrentUserId(),
+					$this->executionPosition
 				],  log: false)
 			);
 		} catch (Throwable $t) {
