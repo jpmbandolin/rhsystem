@@ -41,9 +41,9 @@ class User
 	}
 
 	/**
-	 * @return EntityStatusEnum
+	 * @return ?EntityStatusEnum
 	 */
-	public function getStatus(): EntityStatusEnum
+	public function getStatus(): ?EntityStatusEnum
 	{
 		return $this->status;
 	}

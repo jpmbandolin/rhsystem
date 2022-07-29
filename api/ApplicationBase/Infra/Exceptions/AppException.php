@@ -16,7 +16,7 @@ abstract class AppException extends \Exception
 		$exceptionStack = array_reverse($exceptionStack);
 
 		$detailedMessage = [
-			"message"	=> "",
+			"message"	=> $this->getMessage(),
 			"trace"		=> $this->getTraceAsString()
 		];
 		foreach ($exceptionStack as $index=>$exception) {

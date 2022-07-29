@@ -4,6 +4,7 @@ namespace Modules\User\Infra;
 
 use ApplicationBase\Infra\Database;
 use ApplicationBase\Infra\Enums\PermissionEnum;
+use ApplicationBase\Infra\Enums\EntityStatusEnum;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 use Modules\User\Domain\User;
 use Throwable;
@@ -75,7 +76,7 @@ class UserRepository
 				$user->getName(),
 				$user->getPassword(),
 				$user->getEmail(),
-				$user->getStatus()->value
+				$user->getStatus()?->value ?: EntityStatusEnum::Active->value
 			]);
 
 			return Database::getInstance()->lastInsertId();

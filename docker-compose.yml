@@ -1,0 +1,32 @@
+version: "3.3"
+services:
+  apache:
+    build:
+      context: DockerFiles/apache
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+      - mysql
+    restart: unless-stopped
+    volumes:
+      - "./api:/var/www/html/api"
+      - "./vendor:/var/www/html/vendor"
+      - "./env.ini:/var/www/html/env.ini"
+      - "./storage:/var/www/html/storage"
+    ports:
+      - "80:80"
+  redis:
+    image: redis
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+  mysql:
+    image: mysql
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./mysqlData:/var/lib/mysql"
