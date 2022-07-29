@@ -36,7 +36,7 @@ jobs:
         extensions: mbstring
 
     - name: Add ENV.ini file
-      run: echo ${{ secrets.PROD_ENV }} | base64 -d > env.ini
+      run: echo ${{ secrets.PROD_ENV_MIGRATIONS }} | base64 -d > env.ini
 
     - name: Migrate
       run: "php migration migrate"
