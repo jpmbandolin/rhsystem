@@ -39,7 +39,7 @@ class AddResume extends ControllerAbstract
 			throw new NotFoundException('The requested resume was not found');
 		}
 		
-		if ($resume->getCreatedBy() !== $this->getJwtData()->id) {
+		if ($resume->getCreatedBy() !== self::getJwtData()->id) {
 			throw new PermissionException("You dont have permission to add this resume to a candidate");
 		}
 		

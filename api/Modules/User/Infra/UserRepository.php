@@ -3,6 +3,7 @@
 namespace Modules\User\Infra;
 
 use ApplicationBase\Infra\Database;
+use ApplicationBase\Infra\QueryBuilder;
 use ApplicationBase\Infra\Enums\PermissionEnum;
 use ApplicationBase\Infra\Enums\EntityStatusEnum;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
@@ -20,7 +21,7 @@ class UserRepository
 		$sql = "SELECT id, name, email, password, status FROM user WHERE id = ?";
 
 		try {
-			return Database::getInstance()->fetchObject($sql, [$id], User::class) ?: null;
+			return Database::getInstance()->fetchObject(QueryBuilder::create($sql, [$id]), User::class) ?: null;
 		}catch (Throwable $t){
 			throw new DatabaseException(message: 'Error getting user by Id', previous: $t);
 		}
@@ -35,7 +36,7 @@ class UserRepository
 		$sql = "SELECT id, name, email, password, status FROM user WHERE (name = ? OR email = ?)";
 
 		try {
-			return Database::getInstance()->fetchObject($sql, [$login, $login], User::class) ?: null;
+			return Database::getInstance()->fetchObject(QueryBuilder::create($sql, [$login, $login]), User::class) ?: null;
 		}catch (Throwable $t){
 			throw new DatabaseException(message: 'Error getting user by Login', previous: $t);
 		}
@@ -49,7 +50,7 @@ class UserRepository
 		$sql = "SELECT id, name, email, password, status FROM user";
 
 		try {
-			return Database::getInstance()->fetchMultiObject(sql: $sql, class_name: User::class) ?: [];
+			return Database::getInstance()->fetchMultiObject(QueryBuilder::create(sql: $sql), className: User::class) ?: [];
 		}catch (Throwable $t){
 			throw new DatabaseException(message: 'Error getting users', previous: $t);
 		}
@@ -71,13 +72,13 @@ class UserRepository
 				status		= VALUES(status)";
 
 		try {
-			Database::getInstance()->prepareAndExecute($sql, [
+			Database::getInstance()->prepareAndExecute(QueryBuilder::create($sql, [
 				$user->getId(),
 				$user->getName(),
 				$user->getPassword(),
 				$user->getEmail(),
 				$user->getStatus()?->value ?: EntityStatusEnum::Active->value
-			]);
+			]));
 
 			return Database::getInstance()->lastInsertId();
 		}catch (Throwable $t){

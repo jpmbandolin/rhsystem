@@ -32,7 +32,7 @@ class AddComment extends ControllerAbstract
 			throw new NotFoundException("The requested test was not found");
 		}
 		
-		$comment = new Comment(comment: $dto->comment, authorId: $this->getJwtData()->id);
+		$comment = new Comment(comment: $dto->comment, authorId: self::getJwtData()->id);
 		
 		try {
 			Database::getInstance()->beginTransaction();

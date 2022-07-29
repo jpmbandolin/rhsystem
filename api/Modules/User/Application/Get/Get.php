@@ -21,17 +21,13 @@ class Get extends ControllerAbstract
 	 * @return ResponseInterface
 	 * @throws DatabaseException
 	 * @throws NotFoundException
-	 * @throws PermissionException|UnauthenticatedException
+	 * @throws UnauthenticatedException
 	 */
 	public function run(GetDTO $dto): ResponseInterface
 	{
 		if (!is_null($dto->id)) {
-			$jwtData = $this->getJwtData();
-			
-			if ($dto->id !== $jwtData->id && !in_array(PermissionEnum::UserRead, $jwtData->permissions, true)) {
-				throw new PermissionException('You don\'t have permission to get data from this user');
-			}
-			
+			$jwtData = self::getJwtData();
+
 			$user = User::getById($dto->id);
 			
 			if (is_null($user)) {

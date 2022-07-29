@@ -48,67 +48,64 @@ class Database extends \PDO
 
 		return self::$instance;
 	}
-
+	
 	/**
-	 * @param string $sql
-	 * @param array $args
+	 * @param QueryBuilder $queryBuilder
 	 *
 	 * @return bool|PDOStatement
 	 */
-	public function prepareAndExecute(string $sql, array $args = array()):bool|PDOStatement{
-		$sql = static::$instance->prepare($sql);
-		if(empty($args)){
+	public function prepareAndExecute(QueryBuilder $queryBuilder):bool|PDOStatement{
+		$sql = static::$instance->prepare($queryBuilder->getSql());
+		if(empty($queryBuilder->getArgs())){
 			$sql->execute();
 		} else{
-			$sql->execute($args);
+			$sql->execute($queryBuilder->getArgs());
 		}
 
 		return $sql;
 	}
-
+	
 	/**
-	 * @param        $sql
-	 * @param array $args
-	 * @param string $class_name
+	 * @param QueryBuilder $queryBuilder
+	 * @param string       $className
 	 *
 	 * @return array|bool
 	 */
-	public function fetchMultiObject($sql, array $args = array(), string $class_name = "stdClass"): array|bool
+	public function fetchMultiObject(QueryBuilder $queryBuilder, string $className = \stdClass::class): array|bool
 	{
-		$sql    = static::$instance->prepareAndExecute($sql, $args);
-		if($class_name === "stdClass"){
-			$array = $sql->fetchAll(self::FETCH_CLASS, $class_name);
+		$sql    = static::$instance->prepareAndExecute($queryBuilder);
+		if($className === \stdClass::class){
+			$array = $sql->fetchAll(self::FETCH_CLASS, $className);
 		}else{
 			$array = $sql->fetchAll(self::FETCH_ASSOC);
-			$array = array_map(static function($row) use ($class_name){
-				if ($class_name === PermissionEnum::class){
+			$array = array_map(static function($row) use ($className){
+				if ($className === PermissionEnum::class){
 					return PermissionEnum::tryFrom($row['name']);
 				}
 
-				return new $class_name(...$row);
+				return new $className(...$row);
 			},$array);
 		}
 		$sql->closeCursor();
 		return $array;
 	}
-
+	
 	/**
-	 * @param        $sql
-	 * @param array  $args
-	 * @param string $class_name
+	 * @param QueryBuilder $queryBuilder
+	 * @param string       $className
 	 *
 	 * @return mixed
 	 */
-	public function fetchObject($sql, array $args = array(), string $class_name = "stdClass"): mixed
+	public function fetchObject(QueryBuilder $queryBuilder, string $className = \stdClass::class): mixed
 	{
-		$sql    = static::$instance->prepareAndExecute($sql, $args);
-		if($class_name === "stdClass"){
-			$object = $sql->fetch($class_name);
+		$sql    = static::$instance->prepareAndExecute($queryBuilder);
+		if($className === \stdClass::class){
+			$object = $sql->fetch($className);
 		}else{
 
 			$object = $sql->fetch(self::FETCH_ASSOC);
 			if($object){
-				$object = new $class_name(...$object);
+				$object = new $className(...$object);
 			}
 
 		}

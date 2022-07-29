@@ -22,7 +22,7 @@ class Comment
 	public function __construct(
 		private readonly string  $comment,
 		private readonly int     $authorId,
-		string|EntityStatusEnum  $status,
+		string|EntityStatusEnum  $status = EntityStatusEnum::Active,
 		private ?int             $id = null,
 	) {
 		$this->setStatus($status);

@@ -6,6 +6,7 @@ use Throwable;
 use Modules\Resume\Domain\Resume;
 use ApplicationBase\Infra\Database;
 use Modules\Candidate\Domain\Candidate;
+use ApplicationBase\Infra\QueryBuilder;
 use ApplicationBase\Infra\Enums\EntityStatusEnum;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 
@@ -23,12 +24,10 @@ class ResumeRepository
 		$sql = "INSERT INTO candidate_resume (candidate_id, file_id) VALUES (?, ?)";
 		
 		try {
-			Database::getInstance()->prepareAndExecute(
-				$sql, [
-					$candidate->getId(),
-					$resume->getFileId(),
-				]
-			);
+			Database::getInstance()->prepareAndExecute(QueryBuilder::create($sql, [
+				$candidate->getId(),
+				$resume->getFileId(),
+			]));
 		} catch (Throwable $t) {
 			throw new DatabaseException("Error saving candidate resume", previous: $t);
 		}
@@ -49,7 +48,7 @@ class ResumeRepository
 				WHERE f.id = ? AND f.status != ?";
 		
 		try {
-			return Database::getInstance()->fetchObject($sql, [$fileId, EntityStatusEnum::Deleted->value], Resume::class) ?: null;
+			return Database::getInstance()->fetchObject(QueryBuilder::create($sql, [$fileId, EntityStatusEnum::Deleted->value]), Resume::class) ?: null;
 		} catch (Throwable $t) {
 			throw new DatabaseException("Error getting Test by file ID", previous: $t);
 		}

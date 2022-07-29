@@ -27,7 +27,7 @@ class Create extends ControllerAbstract
 	{
 		$file = self::getUploadedFile($request);
 
-		$resume = new Resume(file: $file, userFriendlyName: $file->getClientFilename(), type: $file->getClientMediaType(), createdBy: $this->getJwtData()->id);
+		$resume = new Resume(file: $file, userFriendlyName: $file->getClientFilename(), type: $file->getClientMediaType(), createdBy: self::getJwtData()->id);
 
 		try {
 			Database::getInstance()->beginTransaction();

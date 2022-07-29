@@ -38,7 +38,7 @@ class CreatePhoto extends ControllerAbstract
 		
 		$file = self::getUploadedFile($request);
 		
-		$photo = new Photo(file: $file, userFriendlyName: $file->getClientFilename(), type: $file->getClientMediaType(), createdBy: $this->getJwtData()->id);
+		$photo = new Photo(file: $file, userFriendlyName: $file->getClientFilename(), type: $file->getClientMediaType(), createdBy: self::getJwtData()->id);
 		
 		try {
 			Database::getInstance()->beginTransaction();

@@ -93,7 +93,7 @@ abstract class ControllerAbstract
 	 * @return JWTPayload
 	 * @throws UnauthenticatedException
 	 */
-	final protected function getJwtData():JWTPayload{
+	final public static function getJwtData():JWTPayload{
 		global $container;
 		try{
 			return new JWTPayload($container->get(JWT::class));

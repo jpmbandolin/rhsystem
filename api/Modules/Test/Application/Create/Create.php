@@ -27,7 +27,7 @@ class Create extends ControllerAbstract
 	{
 		$file = self::getUploadedFile($request);
 
-		$test = new Test(file: $file, userFriendlyName: $file->getClientFilename(), type: $file->getClientMediaType(), createdBy: $this->getJwtData()->id);
+		$test = new Test(file: $file, userFriendlyName: $file->getClientFilename(), type: $file->getClientMediaType(), createdBy: self::getJwtData()->id);
 
 		try {
 			Database::getInstance()->beginTransaction();

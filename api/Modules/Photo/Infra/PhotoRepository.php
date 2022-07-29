@@ -4,6 +4,7 @@ namespace Modules\Photo\Infra;
 
 use Modules\Photo\Domain\Photo;
 use ApplicationBase\Infra\Database;
+use ApplicationBase\Infra\QueryBuilder;
 use ApplicationBase\Infra\Enums\EntityStatusEnum;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 
@@ -21,7 +22,7 @@ class PhotoRepository
 				WHERE id = ? AND status != ?";
 
 		try {
-			return Database::getInstance()->fetchObject($sql, [$fileId, EntityStatusEnum::Deleted->value], Photo::class);
+			return Database::getInstance()->fetchObject(QueryBuilder::create($sql, [$fileId, EntityStatusEnum::Deleted->value]), Photo::class);
 		}catch (\Throwable $t){
 			throw new DatabaseException('Error getting file by id', previous: $t);
 		}

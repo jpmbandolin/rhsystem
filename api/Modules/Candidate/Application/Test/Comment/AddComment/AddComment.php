@@ -52,7 +52,7 @@ class AddComment extends ControllerAbstract
 		
 		try {
 			Database::getInstance()->beginTransaction();
-			$comment = new Comment(comment: $dto->comment, authorId: $this->getJwtData()->id);
+			$comment = new Comment(comment: $dto->comment, authorId: self::getJwtData()->id);
 			$comment->save();
 			$test->addComment($comment);
 			Database::getInstance()->commit();

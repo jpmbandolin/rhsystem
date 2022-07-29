@@ -38,7 +38,7 @@ class AddTest extends ControllerAbstract
 			throw new NotFoundException('The requested test was not found');
 		}
 		
-		if ($test->getCreatedBy() !== $this->getJwtData()->id) {
+		if ($test->getCreatedBy() !== self::getJwtData()->id) {
 			throw new PermissionException("You dont have permission to add this test to a candidate");
 		}
 		

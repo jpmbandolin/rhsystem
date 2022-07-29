@@ -5,6 +5,7 @@ namespace Modules\File\Infra;
 use Throwable;
 use ApplicationBase\Infra\Database;
 use Modules\File\Domain\FileAbstract;
+use ApplicationBase\Infra\QueryBuilder;
 use ApplicationBase\Infra\Exceptions\AppException;
 use ApplicationBase\Infra\Exceptions\RuntimeException;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
@@ -22,14 +23,12 @@ class FileRepository
 		$sql = "INSERT INTO file (name, user_friendly_name, type, created_by) VALUES (?, ?, ?, ?)";
 		
 		try {
-			Database::getInstance()->prepareAndExecute(
-				$sql, [
-					$file->getName()                ?? throw new RuntimeException("Missing 'name' parameter to create file"),
-					$file->getUserFriendlyName()    ?? throw new RuntimeException("Missing 'user_friendly_name' parameter to create file"),
-					$file->getType()                ?? throw new RuntimeException("Missing 'type' parameter to create file"),
-					$file->getCreatedBy()           ?? throw new RuntimeException("Missing 'created_by' parameter to create file"),
-				]
-			);
+			Database::getInstance()->prepareAndExecute(QueryBuilder::create($sql, [
+				$file->getName()                ?? throw new RuntimeException("Missing 'name' parameter to create file"),
+				$file->getUserFriendlyName()    ?? throw new RuntimeException("Missing 'user_friendly_name' parameter to create file"),
+				$file->getType()                ?? throw new RuntimeException("Missing 'type' parameter to create file"),
+				$file->getCreatedBy()           ?? throw new RuntimeException("Missing 'created_by' parameter to create file"),
+			]));
 
 			return Database::getInstance()->lastInsertId();
 		} catch (AppException $e) {
@@ -49,9 +48,9 @@ class FileRepository
 		$sql = "UPDATE file SET status = ? WHERE id = ?";
 		
 		try {
-			Database::getInstance()->prepareAndExecute($sql, [$file->getStatus()->value, $file->getFileId()]);
+			Database::getInstance()->prepareAndExecute(QueryBuilder::create($sql, [$file->getStatus()->value, $file->getFileId()]));
 		}catch (Throwable $t){
-			throw new DatabaseException("Error updating file status");
+			throw new DatabaseException("Error updating file status", previous: $t);
 		}
 	}
 }

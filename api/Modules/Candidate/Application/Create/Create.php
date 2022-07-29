@@ -17,7 +17,7 @@ class Create extends ControllerAbstract
 	 */
 	public function run(CreateDTO $dto): ResponseInterface
 	{
-		(new Candidate(name: $dto->name, email: $dto->email, createdBy: $this->getJwtData()->id))
+		(new Candidate(name: $dto->name, email: $dto->email, createdBy: self::getJwtData()->id))
 			->save();
 
 		return $this->replyRequest(status: 201);

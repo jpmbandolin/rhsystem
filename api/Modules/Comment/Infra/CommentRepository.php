@@ -5,6 +5,7 @@ namespace Modules\Comment\Infra;
 use Throwable;
 use ApplicationBase\Infra\Database;
 use Modules\Comment\Domain\Comment;
+use ApplicationBase\Infra\QueryBuilder;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 
 class CommentRepository
@@ -20,12 +21,10 @@ class CommentRepository
 		$sql = "INSERT INTO comment (comment, author_id) VALUES (?, ?)";
 		
 		try {
-			Database::getInstance()->prepareAndExecute(
-				$sql, [
-					    $comment->getComment(),
-					    $comment->getAuthorId(),
-				]
-			);
+			Database::getInstance()->prepareAndExecute(QueryBuilder::create($sql, [
+				$comment->getComment(),
+				$comment->getAuthorId(),
+			]));
 			
 			return Database::getInstance()->lastInsertId();
 		} catch (Throwable $t) {
@@ -43,7 +42,7 @@ class CommentRepository
 		$sql = "UPDATE comment SET status = ? WHERE id = ?";
 		
 		try {
-			Database::getInstance()->prepareAndExecute($sql, [$comment->getStatus()->value, $comment->getId()]);
+			Database::getInstance()->prepareAndExecute(QueryBuilder::create($sql, [$comment->getStatus()->value, $comment->getId()]));
 		}catch (Throwable $t){
 			throw new DatabaseException("Error updating comment status", previous: $t);
 		}
