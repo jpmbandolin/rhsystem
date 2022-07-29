@@ -1,4 +1,4 @@
-name: Migrations Prod
+name: Execute Migrations
 
 on:
   push:
