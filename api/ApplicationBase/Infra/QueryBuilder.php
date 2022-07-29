@@ -78,6 +78,9 @@ class QueryBuilder
 		return self::$requestId;
 	}
 	
+	/**
+	 * @return null|SqlClauseEnum
+	 */
 	private function getFirstClause(): ?SqlClauseEnum
 	{
 		$sql = strtoupper($this->sql);
@@ -97,10 +100,13 @@ class QueryBuilder
 		return $clause ?? null;
 	}
 	
+	/**
+	 * @return string
+	 */
 	private function getTargetTable(): string
 	{
 		preg_match(pattern: "/from(?:\W|)([A-z]+)(?:$|\W)/i", subject: $this->sql, matches: $matches);
-		return $matches[1][0];
+		return $matches[1];
 	}
 	
 	/**
