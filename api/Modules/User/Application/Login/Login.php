@@ -4,8 +4,7 @@
 namespace Modules\User\Application\Login;
 
 use ApplicationBase\Infra\{Abstracts\ControllerAbstract, Slim\Authenticator};
-use ApplicationBase\Infra\Exceptions\{DatabaseException, UnauthenticatedException};
-use DI\NotFoundException;
+use ApplicationBase\Infra\Exceptions\{DatabaseException, UnauthenticatedException, NotFoundException};
 use Modules\User\Domain\User;
 use Psr\Http\Message\ResponseInterface;
 

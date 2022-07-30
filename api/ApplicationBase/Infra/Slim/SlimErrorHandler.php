@@ -51,8 +51,10 @@ class SlimErrorHandler extends ErrorHandler
 		
 		try {
 			$this->notificateDiscord($exception);
-		}catch (Throwable){
-		
+		}catch (Throwable $t){
+			if ($devEnvironment){
+				die($t->getMessage());
+			}
 		}
 
 		return $response
