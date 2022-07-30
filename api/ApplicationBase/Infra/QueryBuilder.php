@@ -112,9 +112,9 @@ class QueryBuilder
 	}
 	
 	/**
-	 * @return string
+	 * @return null|string
 	 */
-	private function getTargetTable(): string
+	private function getTargetTable(): ?string
 	{
 		preg_match(pattern: "/from(?:\W|)([A-z]+)(?:$|\W)/i", subject: $this->sql, matches: $matches);
 		return $matches[1];
