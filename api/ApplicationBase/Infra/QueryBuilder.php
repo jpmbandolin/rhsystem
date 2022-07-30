@@ -12,6 +12,7 @@ class QueryBuilder
 	private static string $requestId;
 	private static int $executionOrder = 1;
 	private int $executionPosition;
+	private ?SqlClauseEnum $sqlClause = null;
 
 	/**
 	 * @param string $sql
@@ -27,6 +28,7 @@ class QueryBuilder
 		if ($this->log){
 			$this->executionPosition = self::$executionOrder;
 			self::$executionOrder++;
+			$this->sqlClause = $this->getFirstClause();
 		}
 	}
 	
@@ -116,8 +118,23 @@ class QueryBuilder
 	 */
 	private function getTargetTable(): ?string
 	{
-		preg_match(pattern: "/from(?:\W|)([A-z]+)(?:$|\W)/i", subject: $this->sql, matches: $matches);
-		return $matches[1];
+		switch ($this->sqlClause){
+			case SqlClauseEnum::Select:
+			case SqlClauseEnum::Delete:
+				preg_match(pattern: "/from(?:\W|)([A-z]+)(?:$|\W)/i", subject: $this->sql, matches: $matches);
+				return $matches[1];
+			case SqlClauseEnum::Truncate:
+				preg_match(pattern: "/truncate(?:\W|)([A-z]+)(?:$|\W)/i", subject: $this->sql, matches: $matches);
+				return $matches[1];
+			case SqlClauseEnum::Insert:
+				preg_match(pattern: "/insert into(?:\W|)([A-z]+)(?:$|\W)/i", subject: $this->sql, matches: $matches);
+				return $matches[1];
+			case SqlClauseEnum::Update:
+				preg_match(pattern: "/update(?:\W|)([A-z]+)(?:$|\W)/i", subject: $this->sql, matches: $matches);
+				return $matches[1];
+		}
+
+		return null;
 	}
 	
 	/**
