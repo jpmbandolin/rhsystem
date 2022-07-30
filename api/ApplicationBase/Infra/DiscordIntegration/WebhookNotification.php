@@ -51,7 +51,7 @@ class WebhookNotification
 		$payload = ["username" => $this->username, "embeds" => ["title"=>"Exception Detected: "]];
 		
 		foreach ($this->embeds as $index => $embed) {
-			$payload["embeds"][$index] = [
+			$payload["embeds"][$index+1] = [
 				"title" => $embed->getTitle(), "type" => $embed->getType(), "description" => $embed->getDescription(), "color" => $embed->getColor(),
 			];
 		}
