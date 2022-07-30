@@ -45,3 +45,4 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         localDir: './'
         remoteDir: '/var/www/html'
+        forceUpload: true
