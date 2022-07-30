@@ -13,12 +13,14 @@ class QueryBuilder
 	private static int $executionOrder = 1;
 	private int $executionPosition;
 	private ?SqlClauseEnum $sqlClause = null;
-
+	private static Database $databaseInstance;
+	
 	/**
 	 * @param string $sql
 	 * @param array  $args
 	 * @param bool   $log
 	 *
+	 * @throws DatabaseException
 	 */
 	public function __construct(
 		private readonly string $sql,
@@ -29,15 +31,11 @@ class QueryBuilder
 			$this->executionPosition = self::$executionOrder;
 			self::$executionOrder++;
 			$this->sqlClause = $this->getFirstClause();
-		}
-	}
-	
-	/**
-	 * @throws DatabaseException
-	 */
-	public function __destruct(){
-		if ($this->log) {
 			$this->log();
+		}
+
+		if (!isset(self::$databaseInstance)){
+			self::$databaseInstance = new Database(forceNewInstance: true);
 		}
 	}
 	
@@ -51,7 +49,7 @@ class QueryBuilder
 				VALUES (?, ?, ?, ?, ?, ?, ?)";
 		
 		try {
-			Database::getInstance()->prepareAndExecute(
+			self::$databaseInstance->prepareAndExecute(
 				self::create(sql: $sql, args: [
 					self::getRequestId(),
 					$this->getFirstClause()?->value,
@@ -73,6 +71,7 @@ class QueryBuilder
 	 * @param bool   $log
 	 *
 	 * @return QueryBuilder
+	 * @throws DatabaseException
 	 */
 	public static function create(string $sql, array $args = [], bool $log = true): QueryBuilder
 	{

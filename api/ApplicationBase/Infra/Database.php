@@ -14,7 +14,7 @@ class Database extends \PDO
 	/**
 	 * @throws DatabaseException
 	 */
-	public function __construct()
+	public function __construct(private readonly bool $forceNewInstance = false)
 	{
 		global $ENV;
 
@@ -55,7 +55,8 @@ class Database extends \PDO
 	 * @return bool|PDOStatement
 	 */
 	public function prepareAndExecute(QueryBuilder $queryBuilder):bool|PDOStatement{
-		$sql = static::$instance->prepare($queryBuilder->getSql());
+		$instance = $this->forceNewInstance ? $this : static::$instance;
+		$sql = $instance->prepare($queryBuilder->getSql());
 		if(empty($queryBuilder->getArgs())){
 			$sql->execute();
 		} else{
@@ -73,7 +74,8 @@ class Database extends \PDO
 	 */
 	public function fetchMultiObject(QueryBuilder $queryBuilder, string $className = \stdClass::class): array|bool
 	{
-		$sql    = static::$instance->prepareAndExecute($queryBuilder);
+		$instance = $this->forceNewInstance ? $this : static::$instance;
+		$sql    = $instance->prepareAndExecute($queryBuilder);
 		if($className === \stdClass::class){
 			$array = $sql->fetchAll(self::FETCH_CLASS, $className);
 		}else{
@@ -98,7 +100,8 @@ class Database extends \PDO
 	 */
 	public function fetchObject(QueryBuilder $queryBuilder, string $className = \stdClass::class): mixed
 	{
-		$sql    = static::$instance->prepareAndExecute($queryBuilder);
+		$instance = $this->forceNewInstance ? $this : static::$instance;
+		$sql    = $instance->prepareAndExecute($queryBuilder);
 		if($className === \stdClass::class){
 			$object = $sql->fetch($className);
 		}else{
