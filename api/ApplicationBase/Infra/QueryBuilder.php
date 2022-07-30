@@ -25,13 +25,13 @@ class QueryBuilder
 	public function __construct(
 		private readonly string $sql,
 		private readonly array  $args = [],
-		private readonly bool   $log = true
+		private readonly bool   $log = false
 	) {
-		if (!isset(self::$databaseInstance)){
-			self::$databaseInstance = new Database(forceNewInstance: true);
-		}
-
 		if ($this->log){
+			if (!isset(self::$databaseInstance)){
+				self::$databaseInstance = new Database(forceNewInstance: true);
+			}
+
 			$this->executionPosition = self::$executionOrder;
 			self::$executionOrder++;
 			$this->sqlClause = $this->getFirstClause();

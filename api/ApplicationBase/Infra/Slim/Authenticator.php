@@ -41,7 +41,7 @@ class Authenticator
 	{
 		global $container;
 		$headers = $request->getHeaders();
-		
+
 		if ((!isset($headers['Authorization']) || empty($headers['Authorization'][0]))) {
 			throw new UnauthenticatedException('Token not found.');
 		}
