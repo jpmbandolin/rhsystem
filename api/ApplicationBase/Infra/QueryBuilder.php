@@ -56,7 +56,7 @@ class QueryBuilder
 					$this->getTargetTable(),
 					$this->sql,
 					json_encode($this->args, JSON_THROW_ON_ERROR),
-					self::getCurrentUserId(),
+					ControllerAbstract::getCurrentUserData(),
 					$this->executionPosition
 				],  log: false)
 			);
@@ -135,19 +135,7 @@ class QueryBuilder
 
 		return null;
 	}
-	
-	/**
-	 * @return null|int
-	 */
-	private static function getCurrentUserId(): ?int
-	{
-		try {
-			return ControllerAbstract::getJwtData()?->id;
-		} catch (Throwable) {
-			return null;
-		}
-	}
-	
+
 	/**
 	 * @return string
 	 */

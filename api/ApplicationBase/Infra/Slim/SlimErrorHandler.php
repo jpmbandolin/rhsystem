@@ -10,6 +10,7 @@ use Slim\Handlers\ErrorHandler;
 use Throwable;
 use ApplicationBase\Infra\DiscordIntegration\Embed;
 use ApplicationBase\Infra\Exceptions\RuntimeException;
+use ApplicationBase\Infra\Abstracts\ControllerAbstract;
 use ApplicationBase\Infra\DiscordIntegration\WebhookNotification;
 
 class SlimErrorHandler extends ErrorHandler
@@ -72,16 +73,23 @@ class SlimErrorHandler extends ErrorHandler
 	 * @throws JsonException
 	 */
 	private function notificateDiscord(Throwable $t):void{
+		$currentUserData = ControllerAbstract::getCurrentUserData();
 		$embeds = [new Embed(title: "New Exception Detected", type: "rich", description: "Trace Below", color: 220)];
-		foreach (AppException::yieldExceptionDataRecursive($t) as $exceptionData){
+		foreach (AppException::yieldExceptionDataRecursive($t) as $index => $exceptionData){
 			$embeds[] = new Embed(
-				title: $exceptionData['message'],
+				title: "#".($index+1) . " - " . $exceptionData['message'],
 				type: "rich",
 				description: "File: " . $exceptionData['file'] . " Line: " . $exceptionData['line'],
 				color: "255"
 			);
 		}
 		global $ENV;
-		(new WebhookNotification($ENV["APPLICATION"]['error_webhook_address'], "Bad News Bringer", ...$embeds))->send();
+		$webhookNotification = new WebhookNotification($ENV["APPLICATION"]['error_webhook_address'], "Bad News Bringer", ...$embeds);
+		
+		if($currentUserData !== null){
+			$webhookNotification->setAuthor($currentUserData->id . " - " . $currentUserData->name);
+		}
+
+		$webhookNotification->send();
 	}
 }

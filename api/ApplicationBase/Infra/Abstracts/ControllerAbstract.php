@@ -101,4 +101,16 @@ abstract class ControllerAbstract
 			throw new UnauthenticatedException("Error getting user payload", previous: $t);
 		}
 	}
+	
+	/**
+	 * @return null|JWTPayload
+	 */
+	public static function getCurrentUserData(): ?JWTPayload
+	{
+		try {
+			return self::getJwtData();
+		} catch (\Throwable) {
+			return null;
+		}
+	}
 }

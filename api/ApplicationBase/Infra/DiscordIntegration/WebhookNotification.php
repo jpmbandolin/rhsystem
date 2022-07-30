@@ -15,9 +15,24 @@ class WebhookNotification
 	 */
 	private array $embeds;
 	
-	public function __construct(private readonly string $webhookAddress, private readonly string $username, Embed ...$embeds)
+	private ?string $author;
+	
+	public function __construct(
+		private readonly string $webhookAddress,
+		private readonly string $username, Embed ...$embeds)
 	{
 		$this->embeds = $embeds;
+	}
+	
+	/**
+	 * @param null|string $author
+	 *
+	 * @return WebhookNotification
+	 */
+	public function setAuthor(?string $author): WebhookNotification
+	{
+		$this->author = $author;
+		return $this;
 	}
 	
 	/**
@@ -49,13 +64,17 @@ class WebhookNotification
 	private function getBuildedPayload(): array
 	{
 		$payload = ["username" => $this->username, "embeds" => []];
-		
+
 		foreach ($this->embeds as $index => $embed) {
 			$payload["embeds"][$index] = [
 				"title" => $embed->getTitle(), "type" => $embed->getType(), "description" => $embed->getDescription(), "color" => $embed->getColor(),
 			];
+			
+			if ($index === 0){
+				$payload["embeds"][$index]["author"] = ["name"=>$this->author];
+			}
 		}
-		
+
 		return $payload;
 	}
 }
