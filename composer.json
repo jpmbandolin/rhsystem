@@ -21,7 +21,8 @@
     "php-di/slim-bridge": "^3",
     "firebase/php-jwt": "v5.4.*",
     "ext-pdo": "*",
-    "ext-redis": "*"
+    "ext-redis": "*",
+    "ext-curl": "*"
   }
   ,
   "require-dev": {
