@@ -74,20 +74,20 @@ class SlimErrorHandler extends ErrorHandler
 	 */
 	private function notificateDiscord(Throwable $t):void{
 		$currentUserData = ControllerAbstract::getCurrentUserData();
-		$embeds = [new Embed(title: "New Exception Detected", type: "rich", description: "Trace Below", color: 220)];
+		$embeds = [new Embed(title: "New Exception Detected", type: "rich", description: "Trace Below", color: 15158332)];
 		foreach (AppException::yieldExceptionDataRecursive($t) as $index => $exceptionData){
 			$embeds[] = new Embed(
 				title: "#".($index+1) . " - " . $exceptionData['message'],
 				type: "rich",
 				description: "File: " . $exceptionData['file'] . " Line: " . $exceptionData['line'],
-				color: "255"
+				color: "15158332"
 			);
 		}
 		global $ENV;
 		$webhookNotification = new WebhookNotification($ENV["APPLICATION"]['error_webhook_address'], "Bad News Bringer", ...$embeds);
 		
 		if($currentUserData !== null){
-			$webhookNotification->setAuthor($currentUserData->id . " - " . $currentUserData->name);
+			$webhookNotification->setAuthor("Caused By: " . $currentUserData->id . " - " . $currentUserData->name);
 		}
 
 		$webhookNotification->send();
