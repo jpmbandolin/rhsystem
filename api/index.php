@@ -23,7 +23,6 @@ if ($ENV['APPLICATION']['token_whitelist'] === "1"){
 
 (new Router)($app);
 
-
 $errorMiddleware = $app->addErrorMiddleware(false, false, false);
 $errorMiddleware->setDefaultErrorHandler(new SlimErrorHandler($app->getCallableResolver(), $app->getResponseFactory()));
 
