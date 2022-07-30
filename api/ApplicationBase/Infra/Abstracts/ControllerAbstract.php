@@ -25,7 +25,7 @@ abstract class ControllerAbstract
 
 		$file = $files['file'];
 		
-		if ($file->getError() !== UPLOAD_ERR_OK) {
+		if ($file?->getError() !== UPLOAD_ERR_OK) {
 			throw new RuntimeException("Error retrieving the uploaded file");
 		}
 		

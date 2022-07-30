@@ -48,7 +48,7 @@ class WebhookNotification
 	 */
 	private function getBuildedPayload(): array
 	{
-		$payload = ["username" => $this->username, "embeds" => []];
+		$payload = ["username" => $this->username, "embeds" => ["title"=>"Exception Detected: "]];
 		
 		foreach ($this->embeds as $index => $embed) {
 			$payload["embeds"][$index] = [
