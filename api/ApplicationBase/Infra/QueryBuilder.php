@@ -27,15 +27,15 @@ class QueryBuilder
 		private readonly array  $args = [],
 		private readonly bool   $log = true
 	) {
+		if (!isset(self::$databaseInstance)){
+			self::$databaseInstance = new Database(forceNewInstance: true);
+		}
+
 		if ($this->log){
 			$this->executionPosition = self::$executionOrder;
 			self::$executionOrder++;
 			$this->sqlClause = $this->getFirstClause();
 			$this->log();
-		}
-
-		if (!isset(self::$databaseInstance)){
-			self::$databaseInstance = new Database(forceNewInstance: true);
 		}
 	}
 	
