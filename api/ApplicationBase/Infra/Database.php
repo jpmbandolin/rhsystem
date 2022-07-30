@@ -55,7 +55,7 @@ class Database extends \PDO
 	 * @return bool|PDOStatement
 	 */
 	public function prepareAndExecute(QueryBuilder $queryBuilder):bool|PDOStatement{
-		$instance = $this->forceNewInstance ? $this : static::$instance;
+		$instance = ($this->forceNewInstance ? $this : static::$instance);
 		$sql = $instance->prepare($queryBuilder->getSql());
 		if(empty($queryBuilder->getArgs())){
 			$sql->execute();
@@ -74,7 +74,7 @@ class Database extends \PDO
 	 */
 	public function fetchMultiObject(QueryBuilder $queryBuilder, string $className = \stdClass::class): array|bool
 	{
-		$instance = $this->forceNewInstance ? $this : static::$instance;
+		$instance = ($this->forceNewInstance ? $this : static::$instance);
 		$sql    = $instance->prepareAndExecute($queryBuilder);
 		if($className === \stdClass::class){
 			$array = $sql->fetchAll(self::FETCH_CLASS, $className);
@@ -100,7 +100,7 @@ class Database extends \PDO
 	 */
 	public function fetchObject(QueryBuilder $queryBuilder, string $className = \stdClass::class): mixed
 	{
-		$instance = $this->forceNewInstance ? $this : static::$instance;
+		$instance = ($this->forceNewInstance ? $this : static::$instance);
 		$sql    = $instance->prepareAndExecute($queryBuilder);
 		if($className === \stdClass::class){
 			$object = $sql->fetch($className);
