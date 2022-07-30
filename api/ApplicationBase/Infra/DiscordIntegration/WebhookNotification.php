@@ -2,6 +2,12 @@
 
 namespace ApplicationBase\Infra\DiscordIntegration;
 
+use JsonException;
+use function curl_exec;
+use function curl_init;
+use function curl_close;
+use function curl_setopt_array;
+
 class WebhookNotification
 {
 	/**
@@ -16,27 +22,18 @@ class WebhookNotification
 	
 	/**
 	 * @return void
-	 * @throws \JsonException
+	 * @throws JsonException
 	 */
-	public function send():void
+	public function send(): void
 	{
 		$curl = curl_init();
 		
 		curl_setopt_array(
 			$curl, [
-			     CURLOPT_URL => $this->webhookAddress,
-			     CURLOPT_RETURNTRANSFER => true,
-			     CURLOPT_ENCODING => '',
-			     CURLOPT_MAXREDIRS => 10,
-			     CURLOPT_TIMEOUT => 0,
-			     CURLOPT_FOLLOWLOCATION => true,
-			     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-			     CURLOPT_CUSTOMREQUEST => 'POST',
-			     CURLOPT_POSTFIELDS => json_encode($this->getBuildedPayload(), JSON_THROW_ON_ERROR),
-			     CURLOPT_HTTPHEADER => [
-				     'Content-Type: application/json',
-			     ],
-		     ]
+				     CURLOPT_URL => $this->webhookAddress, CURLOPT_RETURNTRANSFER => true, CURLOPT_ENCODING => '', CURLOPT_MAXREDIRS => 10, CURLOPT_TIMEOUT => 0, CURLOPT_FOLLOWLOCATION => true, CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1, CURLOPT_CUSTOMREQUEST => 'POST', CURLOPT_POSTFIELDS => json_encode($this->getBuildedPayload(), JSON_THROW_ON_ERROR), CURLOPT_HTTPHEADER => [
+					     'Content-Type: application/json',
+				     ],
+			     ]
 		);
 		
 		$response = curl_exec($curl);
