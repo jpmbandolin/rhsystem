@@ -70,7 +70,7 @@ class WebhookNotification
 				"title" => $embed->getTitle(), "type" => $embed->getType(), "description" => $embed->getDescription(), "color" => $embed->getColor(),
 			];
 			
-			if ($index === 0){
+			if ($index === 0 && isset($this->author)){
 				$payload["embeds"][$index]["author"] = ["name"=>$this->author];
 			}
 		}
