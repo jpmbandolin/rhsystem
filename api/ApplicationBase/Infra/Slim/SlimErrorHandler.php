@@ -51,7 +51,7 @@ class SlimErrorHandler extends ErrorHandler
 		);
 		
 		try {
-			$this->notificateDiscord($exception);
+			$this->notifyDiscord($exception);
 		}catch (Throwable $t){
 			if ($devEnvironment){
 				die($t->getMessage() . "A");
@@ -72,7 +72,7 @@ class SlimErrorHandler extends ErrorHandler
 	 * @return void
 	 * @throws JsonException
 	 */
-	private function notificateDiscord(Throwable $t):void{
+	private function notifyDiscord(Throwable $t):void{
 		$currentUserData = ControllerAbstract::getCurrentUserData();
 		$embeds = [new Embed(title: "New Exception Detected", type: "rich", description: "Trace Below", color: 15158332)];
 		foreach (AppException::yieldExceptionDataRecursive($t) as $index => $exceptionData){
