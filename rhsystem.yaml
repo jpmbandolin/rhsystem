@@ -4,7 +4,7 @@ info:
   description: Documentação da API do sistema de RH
   version: 1.0.0
 servers:
-  - url: '127.0.0.1/rhsystem'
+  - url: '127.0.0.1/rhsystem/api'
 tags:
   - name: user
     description: User related data

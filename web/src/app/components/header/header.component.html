@@ -1,0 +1,24 @@
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+  <div class="container-fluid">
+    <span class="navbar-brand">RH System</span>
+
+    <button class="navbar-toggler" type="button" aria-controls="navbarContent" [attr.aria-expanded]="!collapsed"
+            aria-label="Toggle navigation" (click)="collapsed = !collapsed">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="navbar-collapse" [class.collapse]="collapsed" id="navbarContent">
+      <ul class="navbar-nav">
+        <li class="nav-item" ngbDropdown>
+          <a class="nav-link" tabindex="0" ngbDropdownToggle id="registersDropdown" role="button">
+            Cadastros
+          </a>
+
+          <div ngbDropdownMenu aria-labelledby="registersDropdown" class="dropdown-menu">
+            <a ngbDropdownItem href="#" (click)="$event.preventDefault()">Usuário</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
