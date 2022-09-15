@@ -21,13 +21,10 @@ class Get extends ControllerAbstract
 	 * @return ResponseInterface
 	 * @throws DatabaseException
 	 * @throws NotFoundException
-	 * @throws UnauthenticatedException
 	 */
 	public function run(GetDTO $dto): ResponseInterface
 	{
 		if (!is_null($dto->id)) {
-			$jwtData = self::getJwtData();
-
 			$user = User::getById($dto->id);
 			
 			if (is_null($user)) {

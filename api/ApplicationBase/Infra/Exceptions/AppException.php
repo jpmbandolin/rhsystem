@@ -27,4 +27,16 @@ abstract class AppException extends \Exception
 	}
 
 	abstract public function getHttpStatusCode():int;
+	
+	public static function yieldExceptionDataRecursive(\Throwable $t): \Generator
+	{
+		yield ["message"=>$t->getMessage(), "file"=>$t->getFile(), "line"=>$t->getLine()];
+
+		$previous = $t->getPrevious();
+
+		while ($previous){
+			yield ["message"=>$previous->getMessage(), "file"=>$previous->getFile(), "line"=>$previous->getLine()];
+			$previous = $previous->getPrevious();
+		}
+	}
 }

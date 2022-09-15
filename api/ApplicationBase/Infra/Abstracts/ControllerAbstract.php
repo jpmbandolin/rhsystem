@@ -25,7 +25,7 @@ abstract class ControllerAbstract
 
 		$file = $files['file'];
 		
-		if ($file->getError() !== UPLOAD_ERR_OK) {
+		if ($file?->getError() !== UPLOAD_ERR_OK) {
 			throw new RuntimeException("Error retrieving the uploaded file");
 		}
 		
@@ -99,6 +99,18 @@ abstract class ControllerAbstract
 			return new JWTPayload($container->get(JWT::class));
 		}catch (\Throwable $t){
 			throw new UnauthenticatedException("Error getting user payload", previous: $t);
+		}
+	}
+	
+	/**
+	 * @return null|JWTPayload
+	 */
+	public static function getCurrentUserData(): ?JWTPayload
+	{
+		try {
+			return self::getJwtData();
+		} catch (\Throwable) {
+			return null;
 		}
 	}
 }
