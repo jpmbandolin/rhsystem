@@ -56,7 +56,7 @@ class QueryBuilder
 					$this->getTargetTable(),
 					$this->sql,
 					json_encode($this->args, JSON_THROW_ON_ERROR),
-					ControllerAbstract::getCurrentUserData()->id,
+					ControllerAbstract::getCurrentUserData()?->id,
 					$this->executionPosition
 				],  log: false)
 			);
