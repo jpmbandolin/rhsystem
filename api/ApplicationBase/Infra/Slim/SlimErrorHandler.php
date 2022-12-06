@@ -74,7 +74,7 @@ class SlimErrorHandler extends ErrorHandler
 	 */
 	private function notifyDiscord(Throwable $t):void{
 		$currentUserData = ControllerAbstract::getCurrentUserData();
-		$embeds = [new Embed(title: "New Exception Detected", type: "rich", description: "Endpoint: " . $_SERVER['REQUEST_URI']. " - Trace Below", color: 15158332)];
+		$embeds = [new Embed(title: "New Exception Detected. Code: " . $t->getCode(), type: "rich", description: "Endpoint: " . $_SERVER['REQUEST_URI']. " - Trace Below", color: 15158332)];
 		foreach (AppException::yieldExceptionDataRecursive($t) as $index => $exceptionData){
 			$embeds[] = new Embed(
 				title: "#".($index+1) . " - " . $exceptionData['message'],
