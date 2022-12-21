@@ -18,38 +18,38 @@ use ApplicationBase\Infra\DiscordIntegration\WebhookNotification;
 class SlimErrorHandler extends ErrorHandler
 {
 
-	/**
-	 * @param ServerRequestInterface $request
-	 * @param Throwable              $exception
-	 * @param bool                   $displayErrorDetails
-	 * @param bool                   $logErrors
-	 * @param bool                   $logErrorDetails
-	 * @return ResponseInterface
-	 * @throws JsonException
-	 */
-	public function __invoke(ServerRequestInterface $request, Throwable $originalException, bool $displayErrorDetails, bool $logErrors, bool $logErrorDetails): ResponseInterface
+    /**
+     * @param ServerRequestInterface $request
+     * @param Throwable $exception
+     * @param bool $displayErrorDetails
+     * @param bool $logErrors
+     * @param bool $logErrorDetails
+     * @return ResponseInterface
+     * @throws JsonException
+     */
+	public function __invoke(ServerRequestInterface $request, Throwable $exception, bool $displayErrorDetails, bool $logErrors, bool $logErrorDetails): ResponseInterface
 	{
 		global $app, $ENV;
 
 		$payload = [];
 		$devEnvironment = $ENV['APPLICATION']['environment'] === "dev";
-        $isNotFoundRoute = $originalException instanceof HttpNotFoundException;
+        $isNotFoundRoute = $exception instanceof HttpNotFoundException;
 
         if ($isNotFoundRoute){
-            $exception = new NotFoundException("The requested route was not found.", previous: $originalException);
-        }else if (!is_a($originalException, AppException::class)){
-			$exception = new RuntimeException("Internal Server Error.", previous: $originalException);
+            $handledException = new NotFoundException("The requested route was not found.", previous: $exception);
+        }else if (!is_a($exception, AppException::class)){
+			$handledException = new RuntimeException("Internal Server Error.", previous: $exception);
 		}else {
-            $exception = $originalException;
+            $handledException = $exception;
         }
 
 		if ($devEnvironment) {
-			$payload['error'] = $exception->getDetailedErrorMessage();
-			$payload['errorTrace'] = $exception->getTraceAsString();
-			$payload['file'] = $exception->getFile();
-			$payload['line'] = $exception->getLine();
+			$payload['error'] = $handledException->getDetailedErrorMessage();
+			$payload['errorTrace'] = $handledException->getTraceAsString();
+			$payload['file'] = $handledException->getFile();
+			$payload['line'] = $handledException->getLine();
 		}else {
-			$payload['error'] = $exception->getMessage();
+			$payload['error'] = $handledException->getMessage();
 		}
 
 		$response = $app->getResponseFactory()->createResponse();
@@ -59,16 +59,16 @@ class SlimErrorHandler extends ErrorHandler
 
         if (!$isNotFoundRoute){
             try {
-                $this->notifyDiscord($exception);
+                $this->notifyDiscord($handledException);
             }catch (Throwable $t){
                 if ($devEnvironment){
-                    $exception = new RuntimeException("Discord Webhook Error", previous: $t);
+                    $handledException = new RuntimeException("Discord Webhook Error", previous: $t);
                 }
             }
         }
 
 		return $response
-			->withStatus($exception->getHttpStatusCode())
+			->withStatus($handledException->getHttpStatusCode())
 			->withHeader('Content-Type', 'application/json')
 			->withHeader('Access-Control-Allow-Origin', '*')
 			->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
