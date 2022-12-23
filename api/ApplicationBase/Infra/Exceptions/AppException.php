@@ -30,12 +30,12 @@ abstract class AppException extends \Exception
 	
 	public static function yieldExceptionDataRecursive(\Throwable $t): \Generator
 	{
-		yield ["message"=>$t->getMessage(), "file"=>$t->getFile(), "line"=>$t->getLine()];
+		yield ["message"=>$t->getMessage(), "file"=>$t->getFile(), "line"=>$t->getLine(), "exceptionType" => $t::class];
 
 		$previous = $t->getPrevious();
 
 		while ($previous){
-			yield ["message"=>$previous->getMessage(), "file"=>$previous->getFile(), "line"=>$previous->getLine()];
+			yield ["message"=>$previous->getMessage(), "file"=>$previous->getFile(), "line"=>$previous->getLine(), "exceptionType" => $t::class];
 			$previous = $previous->getPrevious();
 		}
 	}
