@@ -2,6 +2,7 @@
 
 namespace Modules\File\Domain;
 
+use ApplicationBase\Infra\Environment\Environment;
 use Modules\File\Infra\FileRepository;
 use ApplicationBase\Infra\Exceptions\AppException;
 use ApplicationBase\Infra\Exceptions\RuntimeException;
@@ -36,9 +37,8 @@ trait Actions
 	 */
 	private function saveInDisk(): void
 	{
-		global $ENV;
 		$this->name = $this->getHashedName();
-		$fileDirectoryPath = $ENV['FILE_STORAGE']['base_path'];
+		$fileDirectoryPath = Environment::getEnvironment()->getFileStorage()->getBasePath();
 
 		if (!is_dir($fileDirectoryPath)){
 			$this->createDir($fileDirectoryPath);

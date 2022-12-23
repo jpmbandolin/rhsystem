@@ -3,6 +3,7 @@
 namespace ApplicationBase\Infra;
 
 use ApplicationBase\Infra\Enums\PermissionEnum;
+use ApplicationBase\Infra\Environment\Environment;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 use PDOStatement;
 use Throwable;
@@ -16,12 +17,12 @@ class Database extends \PDO
 	 */
 	public function __construct(private readonly bool $forceNewInstance = false)
 	{
-		global $ENV;
+        $databaseEnvironment = Environment::getEnvironment()->getDatabase();
 
-		$host = $ENV['DATABASE']['host'];
-		$user = $ENV['DATABASE']['user'];
-		$pass = $ENV['DATABASE']['password'];
-		$database = $ENV['DATABASE']['database'];
+		$host = $databaseEnvironment->getHost();;
+		$user = $databaseEnvironment->getUser();
+		$pass = $databaseEnvironment->getPassword();
+		$database = $databaseEnvironment->getDatabase();
 
 		$dsn = 'mysql:dbname=' . $database .';host=' . $host;
 

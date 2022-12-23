@@ -3,7 +3,7 @@
 
 namespace Modules\User\Application\Login;
 
-use ApplicationBase\Infra\{Abstracts\ControllerAbstract, Slim\Authenticator};
+use ApplicationBase\Infra\{Abstracts\ControllerAbstract, Environment\Environment, Slim\Authenticator};
 use ApplicationBase\Infra\Exceptions\{DatabaseException, UnauthenticatedException, NotFoundException};
 use Modules\User\Domain\User;
 use Psr\Http\Message\ResponseInterface;
@@ -17,7 +17,8 @@ class Login extends ControllerAbstract
 	 * @throws NotFoundException
 	 * @throws UnauthenticatedException
 	 */
-	public function run(LoginDTO $dto): ResponseInterface{
+	public function run(LoginDTO $dto): ResponseInterface
+    {
 		$user = User::getByLogin($dto->login);
 
 		if ($user === null){
@@ -28,11 +29,10 @@ class Login extends ControllerAbstract
 			throw new UnauthenticatedException('Invalid Password');
 		}
 
-		global $ENV;
 		$jwt = $user->getJWT();
 
 		if (!is_null($whiteList = Authenticator::getWhiteList())){
-			$whiteList::addToWhiteList($jwt, true, $ENV['JWT']['expires_at']);
+			$whiteList::addToWhiteList($jwt, true, Environment::getEnvironment()->getJwt()->getExpiresAt());
 		}
 
 		return $this->replyRequest(body: [

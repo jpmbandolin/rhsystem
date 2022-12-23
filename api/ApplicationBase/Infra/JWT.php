@@ -2,6 +2,7 @@
 
 namespace ApplicationBase\Infra;
 
+use ApplicationBase\Infra\Environment\Environment;
 use ApplicationBase\Infra\Exceptions\UnauthenticatedException;
 use Firebase\JWT\{BeforeValidException, ExpiredException, SignatureInvalidException};
 
@@ -13,16 +14,18 @@ class JWT extends \Firebase\JWT\JWT
 	 * @param mixed $payload
 	 * @return string
 	 */
-	public static function generateJWT(mixed $payload):string{
-		global $ENV;
+	public static function generateJWT(mixed $payload):string
+    {
+        $jwtEnvironment = Environment::getEnvironment()->getJwt();
+
 		$defaultPayload = [
 			"iss"=>"server",
 			"aud"=>"users",
 			"iat"=>time(),
-			"exp"=>time() + $ENV['JWT']['expires_at'] //time in seconds
+			"exp"=>time() + $jwtEnvironment->getExpiresAt() //time in seconds
 		];
 
-		return self::encode(array_merge((array)$payload, $defaultPayload), $ENV['JWT']['key']);
+		return self::encode(array_merge((array)$payload, $defaultPayload), $jwtEnvironment->getKey());
 	}
 
 	/**
@@ -30,11 +33,10 @@ class JWT extends \Firebase\JWT\JWT
 	 * @return object
 	 * @throws UnauthenticatedException
 	 */
-	public static function getJWTPayload(string $jwt):object{
-		global $ENV;
-
+	public static function getJWTPayload(string $jwt):object
+    {
 		try {
-			return self::decode($jwt, $ENV['JWT']['key'], array_keys(self::$supported_algs));
+			return self::decode($jwt, Environment::getEnvironment()->getJwt()->getKey(), array_keys(self::$supported_algs));
 		}catch (SignatureInvalidException $e){
 			throw new UnauthenticatedException(message: "Invalid JWT", previous: $e);
 		}catch (BeforeValidException $e){
@@ -43,5 +45,4 @@ class JWT extends \Firebase\JWT\JWT
 			throw new UnauthenticatedException(message: 'The JWT is expired', previous: $e);
 		}
 	}
-
 }

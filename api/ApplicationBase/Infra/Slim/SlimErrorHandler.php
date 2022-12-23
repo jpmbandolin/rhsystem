@@ -2,6 +2,7 @@
 
 namespace ApplicationBase\Infra\Slim;
 
+use ApplicationBase\Infra\Environment\Environment;
 use ApplicationBase\Infra\Exceptions\AppException;
 use ApplicationBase\Infra\Exceptions\NotFoundException;
 use JsonException;
@@ -29,10 +30,10 @@ class SlimErrorHandler extends ErrorHandler
      */
 	public function __invoke(ServerRequestInterface $request, Throwable $exception, bool $displayErrorDetails, bool $logErrors, bool $logErrorDetails): ResponseInterface
 	{
-		global $app, $ENV;
+		global $app;
 
 		$payload = [];
-		$devEnvironment = $ENV['APPLICATION']['environment'] === "dev";
+		$devEnvironment = Environment::getEnvironment()->getApplication()->getEnvironment() === "dev";
         $isNotFoundRoute = $exception instanceof HttpNotFoundException;
 
         if ($isNotFoundRoute){
@@ -81,25 +82,28 @@ class SlimErrorHandler extends ErrorHandler
 	 * @return void
 	 * @throws JsonException
 	 */
-	private function notifyDiscord(Throwable $t):void{
+	private function notifyDiscord(Throwable $t):void
+    {
 		$currentUserData = ControllerAbstract::getCurrentUserData();
         $exceptionDescription = "Endpoint: " . $_SERVER['REQUEST_URI']. " full uri: " . $_SERVER['REQUEST_URI'] .  " - Trace Below";
-		$embeds = [
+
+        $embeds = [
             new Embed(
                 title: "New Exception Detected. Code: " . $t->getCode(),
                 description: $exceptionDescription,
                 color: 15158332
             )
         ];
-		foreach (AppException::yieldExceptionDataRecursive($t) as $index => $exceptionData){
+
+        foreach (AppException::yieldExceptionDataRecursive($t) as $index => $exceptionData){
 			$embeds[] = new Embed(
 				title: "#".($index+1) . " - " . $exceptionData["exceptionType"]. "::" . $exceptionData['message'],
 				description: "File: " . $exceptionData['file'] . " Line: " . $exceptionData['line'],
 				color: "15158332"
 			);
 		}
-		global $ENV;
-		$webhookNotification = new WebhookNotification($ENV["APPLICATION"]['error_webhook_address'], "Bad News Bringer", ...$embeds);
+
+		$webhookNotification = new WebhookNotification(Environment::getEnvironment()->getApplication()->getErrorWebhookAddress(), "Bad News Bringer", ...$embeds);
 		
 		if($currentUserData !== null){
 			$webhookNotification->setAuthor("Caused By: " . $currentUserData->id . " - " . $currentUserData->name);

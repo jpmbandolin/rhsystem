@@ -2,6 +2,7 @@
 
 namespace Modules\File\Domain;
 
+use ApplicationBase\Infra\Environment\Environment;
 use Modules\File\Infra\FileRepository;
 use Psr\Http\Message\UploadedFileInterface;
 use ApplicationBase\Infra\Enums\EntityStatusEnum;
@@ -175,10 +176,8 @@ abstract class FileAbstract
 	 */
 	public function getFile(): string|UploadedFileInterface|null
 	{
-		global $ENV;
-
 		if (is_null($this->file)){
-			$this->file = file_get_contents($ENV['FILE_STORAGE']['base_path']. substr($this->name, 0, 2) . DIRECTORY_SEPARATOR . $this->name);
+			$this->file = file_get_contents(Environment::getEnvironment()->getFileStorage()->getBasePath(). substr($this->name, 0, 2) . DIRECTORY_SEPARATOR . $this->name);
 		}
 
 		return $this->file;
