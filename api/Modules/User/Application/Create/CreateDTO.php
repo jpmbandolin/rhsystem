@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints\NotNull;
 class CreateDTO extends \ApplicationBase\Infra\Abstracts\DTOAbstract
 {
     #[NotNull(message: "The name field should not be null.")]
-    #[Length(max: 150, maxMessage: "The name field should have 150 characters at most.")]
+    #[Length(min: 3, max: 150, minMessage: "The name field should have at least 3 characters", maxMessage: "The name field should have 150 characters at most.")]
 	public ?string $name = null;
     #[NotNull(message: "The password field should not be null.")]
     #[NotCompromisedPassword(message: "Your password has been compromised according to haveibeenpwned.com, you should not use it.")]
