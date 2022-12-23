@@ -30,7 +30,7 @@ class Get extends ControllerAbstract
 			}
 		}else if ($dtoIdIsNull && $dtoPartialNameIsNull){
 			$candidates = Candidate::getAll();
-		}else{
+		}else {
 			throw new BadRequestException("You can only inform the id or the partial name, but not both");
 		}
 

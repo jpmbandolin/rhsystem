@@ -22,7 +22,8 @@
     "firebase/php-jwt": "v5.4.*",
     "ext-pdo": "*",
     "ext-redis": "*",
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "symfony/validator": "^6.2"
   }
   ,
   "require-dev": {

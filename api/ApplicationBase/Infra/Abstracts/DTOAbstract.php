@@ -5,6 +5,7 @@ namespace ApplicationBase\Infra\Abstracts;
 use ApplicationBase\Infra\Attributes\{ArrayTypeAttribute, OptionalAttribute};
 use ApplicationBase\Infra\Exceptions\InvalidValueException;
 use ReflectionClass;
+use Symfony\Component\Validator\Validation;
 
 abstract class DTOAbstract
 {
@@ -12,11 +13,32 @@ abstract class DTOAbstract
 		return false;
 	}
 
+    /**
+     * @return void
+     * @throws InvalidValueException
+     */
+    final public function checkSymfonyAttributes(): void
+    {
+        $validator = Validation::createValidator();
+        $errors = $validator->validate($this);
+
+        if (count($errors) > 0) {
+            $message = "The following errors where identified: \n";
+
+            foreach ($errors as $error) {
+                $message .= $error->getMessage() . "\n";
+            }
+
+            throw new InvalidValueException($message);
+        }
+    }
+
 	/**
 	 * @return void
 	 * @throws InvalidValueException
 	 */
 	final public function validateDTO():void{
+        $this->checkSymfonyAttributes();
 		$properties = (new ReflectionClass(static::class))->getProperties();
 
 		foreach ($properties as $property){
