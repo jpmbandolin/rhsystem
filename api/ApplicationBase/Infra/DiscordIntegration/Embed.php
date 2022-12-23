@@ -4,14 +4,15 @@ namespace ApplicationBase\Infra\DiscordIntegration;
 
 class Embed
 {
+    private readonly string $type;
+
 	public function __construct(
 		private readonly string $title,
-	    private readonly string $type,
 	    private readonly string $description,
 		private readonly string $color
 	){
-	
-	}
+        $this->type = "rich";
+    }
 	
 	/**
 	 * @return string
