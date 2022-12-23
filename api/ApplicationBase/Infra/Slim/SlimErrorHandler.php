@@ -89,7 +89,7 @@ class SlimErrorHandler extends ErrorHandler
 
         $embeds = [
             new Embed(
-                title: "New Exception Detected. Code: " . $t->getCode(),
+                title: "New Exception Detected. Type: " . $t::class . ". Code: " . $t->getCode(),
                 description: $exceptionDescription,
                 color: 15158332
             )
