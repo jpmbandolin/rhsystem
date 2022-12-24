@@ -27,7 +27,12 @@ abstract class DTOAbstract
         foreach ($reflector->getProperties() as $reflectionProperty){
             $attributes = [];
 
-            foreach (array_filter($reflectionProperty->getAttributes(), static fn($attribute): bool => is_subclass_of($attribute->getName(), Constraint::class)) as $attribute) {
+            foreach (
+                array_filter(
+                    $reflectionProperty->getAttributes(),
+                    static fn($attribute): bool => is_subclass_of($attribute->getName(), Constraint::class)
+                ) as $attribute
+            ) {
                 $attributes[] = $attribute->newInstance();
             }
 
@@ -64,8 +69,8 @@ abstract class DTOAbstract
 				$this->{$propertyName}->validateDTO();
 			}else if (is_array($this->{$propertyName})){
 				if (in_array(ArrayTypeAttribute::class, $propertyAttributeNames, true)){
-					$atributeInstance = $property->getAttributes(ArrayTypeAttribute::class)[0]->newInstance();
-					if (!$atributeInstance->getIsPrimitive()){
+					$attributeInstance = $property->getAttributes(ArrayTypeAttribute::class)[0]->newInstance();
+					if (!$attributeInstance->getIsPrimitive()){
 						foreach ($this->{$propertyName} as $dtoInstance){
 							$dtoInstance->validateDTO();
 						}
