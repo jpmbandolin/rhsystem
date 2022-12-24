@@ -53,11 +53,6 @@ class SlimErrorHandler extends ErrorHandler
 			$payload['error'] = $handledException->getMessage();
 		}
 
-		$response = $app->getResponseFactory()->createResponse();
-		$response->getBody()->write(
-			json_encode($payload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)
-		);
-
         if (!$isNotFoundRoute){
             try {
                 $this->notifyDiscord($handledException);
@@ -67,6 +62,11 @@ class SlimErrorHandler extends ErrorHandler
                 }
             }
         }
+
+        $response = $app->getResponseFactory()->createResponse();
+        $response->getBody()->write(
+            json_encode($payload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)
+        );
 
 		return $response
 			->withStatus($handledException->getHttpStatusCode())
@@ -104,7 +104,7 @@ class SlimErrorHandler extends ErrorHandler
 		}
 
 		$webhookNotification = new WebhookNotification(Environment::getEnvironment()->getApplication()->getErrorWebhookAddress(), "Bad News Bringer", ...$embeds);
-		
+
 		if($currentUserData !== null){
 			$webhookNotification->setAuthor("Caused By: " . $currentUserData->id . " - " . $currentUserData->name);
 		}
