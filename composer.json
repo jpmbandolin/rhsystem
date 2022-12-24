@@ -23,7 +23,8 @@
     "ext-pdo": "*",
     "ext-redis": "*",
     "ext-curl": "*",
-    "symfony/validator": "^6.2"
+    "symfony/validator": "^6.2",
+    "symfony/http-client": "^6.2"
   }
   ,
   "require-dev": {
