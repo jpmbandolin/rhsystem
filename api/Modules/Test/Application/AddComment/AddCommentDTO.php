@@ -4,6 +4,7 @@ namespace Modules\Test\Application\AddComment;
 
 use ApplicationBase\Infra\Abstracts\DTOAbstract;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\Positive;
 use Symfony\Component\Validator\Constraints\Type;
 
 class AddCommentDTO extends DTOAbstract
@@ -17,5 +18,6 @@ class AddCommentDTO extends DTOAbstract
     )]
 	public string $comment;
     #[Type("Integer", message: "The ID should be an integer")]
+    #[Positive(message: "The ID should be a positive number")]
 	public int $id;
 }

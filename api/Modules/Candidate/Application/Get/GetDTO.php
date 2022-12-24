@@ -3,7 +3,7 @@
 namespace Modules\Candidate\Application\Get;
 
 use ApplicationBase\Infra\Attributes\OptionalAttribute;
-use Symfony\Component\Validator\Constraints\{AtLeastOneOf, Length, Type, IsNull};
+use Symfony\Component\Validator\Constraints\{AtLeastOneOf, Length, Positive, Type, IsNull};
 
 class GetDTO extends \ApplicationBase\Infra\Abstracts\DTOAbstract
 {
@@ -12,6 +12,7 @@ class GetDTO extends \ApplicationBase\Infra\Abstracts\DTOAbstract
         new Type(type: "integer")
     ], message: "The ID must either be null or an integer.")]
     #[OptionalAttribute]
+    #[Positive(message: "The ID should be a positive number")]
     public ?int $id = null;
 
     #[AtLeastOneOf(constraints: [
