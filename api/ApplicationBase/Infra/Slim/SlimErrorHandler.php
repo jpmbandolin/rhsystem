@@ -85,7 +85,7 @@ class SlimErrorHandler extends ErrorHandler
 	private function notifyDiscord(Throwable $t):void
     {
 		$currentUserData = ControllerAbstract::getCurrentUserData();
-        $exceptionDescription = "Endpoint: " . $_SERVER['REQUEST_URI']. " full uri: " . $_SERVER['REQUEST_URI'] .  " - Trace Below";
+        $exceptionDescription = "Endpoint: " . $_SERVER['REQUEST_URI']. " full uri: " . $_SERVER['SCRIPT_NAME'] .  " - Trace Below";
 
         $embeds = [
             new Embed(
