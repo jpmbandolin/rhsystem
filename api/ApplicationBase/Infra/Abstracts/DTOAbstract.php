@@ -5,6 +5,7 @@ namespace ApplicationBase\Infra\Abstracts;
 use ApplicationBase\Infra\Attributes\{ArrayTypeAttribute, OptionalAttribute};
 use ApplicationBase\Infra\Exceptions\InvalidValueException;
 use ReflectionClass;
+use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Validation;
 
 abstract class DTOAbstract
@@ -19,8 +20,19 @@ abstract class DTOAbstract
      */
     final public function checkSymfonyAttributes(): void
     {
+        $errors = [];
+        $reflector = new ReflectionClass($this);
         $validator = Validation::createValidator();
-        $errors = $validator->validate($this);
+
+        foreach ($reflector->getProperties() as $reflectionProperty){
+            $attributes = [];
+
+            foreach (array_filter($reflectionProperty->getAttributes(), static fn($attribute): bool => is_subclass_of($attribute->getName(), Constraint::class)) as $attribute) {
+                $attributes[] = $attribute->newInstance();
+            }
+
+            array_push($errors, ...$validator->validate($reflectionProperty->getValue($this), $attributes));
+        }
 
         if (count($errors) > 0) {
             $message = "The following errors where identified: \n";
