@@ -2,15 +2,14 @@
 
 namespace Modules\Resume\Infra;
 
-use Throwable;
+use ApplicationBase\Infra\Abstracts\RepositoryAbstract;
 use Modules\Resume\Domain\Resume;
-use ApplicationBase\Infra\Database;
 use Modules\Candidate\Domain\Candidate;
 use ApplicationBase\Infra\QueryBuilder;
 use ApplicationBase\Infra\Enums\EntityStatusEnum;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 
-class ResumeRepository
+class ResumeRepository extends RepositoryAbstract
 {
 	/**
 	 * @param Resume    $resume
@@ -22,15 +21,11 @@ class ResumeRepository
 	public static function save(Resume $resume, Candidate $candidate): void
 	{
 		$sql = "INSERT INTO candidate_resume (candidate_id, file_id) VALUES (?, ?)";
-		
-		try {
-			Database::getInstance()->prepareAndExecute(QueryBuilder::create($sql, [
-				$candidate->getId(),
-				$resume->getFileId(),
-			]));
-		} catch (Throwable $t) {
-			throw new DatabaseException("Error saving candidate resume", previous: $t);
-		}
+
+        self::prepareAndExecute(QueryBuilder::create($sql, [
+            $candidate->getId(),
+            $resume->getFileId(),
+		]), "Error saving candidate resume");
 	}
 	
 	/**
@@ -46,11 +41,11 @@ class ResumeRepository
 				FROM file f
 				LEFT JOIN candidate_resume cr ON cr.file_id = f.id
 				WHERE f.id = ? AND f.status != ?";
-		
-		try {
-			return Database::getInstance()->fetchObject(QueryBuilder::create($sql, [$fileId, EntityStatusEnum::Deleted->value]), Resume::class) ?: null;
-		} catch (Throwable $t) {
-			throw new DatabaseException("Error getting Test by file ID", previous: $t);
-		}
+
+        return self::fetchObject(
+            QueryBuilder::create($sql, [$fileId, EntityStatusEnum::Deleted->value]),
+            Resume::class,
+            "Error getting Test by file ID"
+        ) ?: null;
 	}
 }

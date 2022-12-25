@@ -2,13 +2,13 @@
 
 namespace Modules\Comment\Infra;
 
-use Throwable;
+use ApplicationBase\Infra\Abstracts\RepositoryAbstract;
 use ApplicationBase\Infra\Database;
 use Modules\Comment\Domain\Comment;
 use ApplicationBase\Infra\QueryBuilder;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 
-class CommentRepository
+class CommentRepository extends RepositoryAbstract
 {
 	/**
 	 * @param Comment $comment
@@ -19,17 +19,13 @@ class CommentRepository
 	public static function save(Comment $comment): int
 	{
 		$sql = "INSERT INTO comment (comment, author_id) VALUES (?, ?)";
-		
-		try {
-			Database::getInstance()->prepareAndExecute(QueryBuilder::create($sql, [
-				$comment->getComment(),
-				$comment->getAuthorId(),
-			]));
-			
-			return Database::getInstance()->lastInsertId();
-		} catch (Throwable $t) {
-			throw new DatabaseException("Error saving new comment", previous: $t);
-		}
+
+        self::prepareAndExecute(QueryBuilder::create($sql, [
+            $comment->getComment(),
+            $comment->getAuthorId(),
+        ]), "Error saving new comment");
+
+        return Database::getInstance()->lastInsertId();
 	}
 	
 	/**
@@ -38,13 +34,13 @@ class CommentRepository
 	 * @return void
 	 * @throws DatabaseException
 	 */
-	public static function updateStatus(Comment $comment): void{
+	public static function updateStatus(Comment $comment): void
+    {
 		$sql = "UPDATE comment SET status = ? WHERE id = ?";
-		
-		try {
-			Database::getInstance()->prepareAndExecute(QueryBuilder::create($sql, [$comment->getStatus()->value, $comment->getId()]));
-		}catch (Throwable $t){
-			throw new DatabaseException("Error updating comment status", previous: $t);
-		}
+
+        self::prepareAndExecute(
+            QueryBuilder::create($sql, [$comment->getStatus()->value, $comment->getId()]),
+            "Error updating comment status"
+        );
 	}
 }

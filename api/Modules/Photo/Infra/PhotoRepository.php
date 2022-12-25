@@ -2,13 +2,13 @@
 
 namespace Modules\Photo\Infra;
 
+use ApplicationBase\Infra\Abstracts\RepositoryAbstract;
 use Modules\Photo\Domain\Photo;
-use ApplicationBase\Infra\Database;
 use ApplicationBase\Infra\QueryBuilder;
 use ApplicationBase\Infra\Enums\EntityStatusEnum;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 
-class PhotoRepository
+class PhotoRepository extends  RepositoryAbstract
 {
 	/**
 	 * @param int $fileId
@@ -21,10 +21,10 @@ class PhotoRepository
 				FROM file
 				WHERE id = ? AND status != ?";
 
-		try {
-			return Database::getInstance()->fetchObject(QueryBuilder::create($sql, [$fileId, EntityStatusEnum::Deleted->value]), Photo::class);
-		}catch (\Throwable $t){
-			throw new DatabaseException('Error getting file by id', previous: $t);
-		}
-	}
+        return self::fetchObject(
+            QueryBuilder::create($sql, [$fileId, EntityStatusEnum::Deleted->value]),
+            Photo::class,
+            "Error getting file by id"
+        );
+    }
 }

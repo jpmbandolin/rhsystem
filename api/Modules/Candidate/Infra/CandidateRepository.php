@@ -2,7 +2,7 @@
 
 namespace Modules\Candidate\Infra;
 
-use Throwable;
+use ApplicationBase\Infra\Abstracts\RepositoryAbstract;
 use Modules\Test\Domain\Test;
 use Modules\Photo\Domain\Photo;
 use Modules\Resume\Domain\Resume;
@@ -12,7 +12,7 @@ use ApplicationBase\Infra\QueryBuilder;
 use ApplicationBase\Infra\Enums\EntityStatusEnum;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 
-class CandidateRepository
+class CandidateRepository extends RepositoryAbstract
 {
 	/**
 	 * @param Candidate $candidate
@@ -29,23 +29,19 @@ class CandidateRepository
 				name = VALUES(name),
 				email = VALUES(email),
 				photo_id = VALUES(photo_id)";
-		
-		try {
-			Database::getInstance()->prepareAndExecute(QueryBuilder::create(
-				$sql, [
-					    $candidate->getId(),
-					    $candidate->getCreatedBy(),
-					    $candidate->getName(),
-					    $candidate->getEmail(),
-					    $candidate->getPhotoId()
-				    ]
-			)
-			);
-			
-			return Database::getInstance()->lastInsertId();
-		} catch (Throwable $t) {
-			throw new DatabaseException("Error saving new candidate", previous: $t);
-		}
+
+        self::prepareAndExecute(QueryBuilder::create(
+            $sql, [
+                    $candidate->getId(),
+                    $candidate->getCreatedBy(),
+                    $candidate->getName(),
+                    $candidate->getEmail(),
+                    $candidate->getPhotoId()
+                ]
+            ), "Error saving new candidate"
+        );
+
+        return Database::getInstance()->lastInsertId();
 	}
 	
 	/**
@@ -58,12 +54,13 @@ class CandidateRepository
 		$sql = "SELECT name, email, created_by AS createdBy, id, photo_id as photoId
 				FROM candidate
 				WHERE id = ?";
-		
-		try{
-			return Database::getInstance()->fetchObject(QueryBuilder::create($sql, [$id]), Candidate::class) ?: null;
-		}catch (Throwable $t){
-			throw new DatabaseException("Error getting candidate by id", previous: $t);
-		}
+
+		return self::fetchObject(
+            QueryBuilder::create($sql, [$id]),
+            Candidate::class,
+            "Error getting candidate by id"
+        ) ?: null;
+
 	}
 
 	/**
@@ -74,11 +71,11 @@ class CandidateRepository
 		$sql = "SELECT name, email, created_by AS createdBy, id, photo_id as photoId
 				FROM candidate";
 
-		try {
-			return Database::getInstance()->fetchMultiObject(QueryBuilder::create($sql), className: Candidate::class) ?: [];
-		}catch (Throwable $t){
-			throw new DatabaseException("", previous: $t);
-		}
+		return self::fetchMultiObject(
+            QueryBuilder::create($sql),
+            className: Candidate::class,
+            errorMessage: "Error getting candidate list"
+        ) ?: [];
 	}
 
 	/**
@@ -91,12 +88,12 @@ class CandidateRepository
 		$sql = "SELECT name, email, created_by AS createdBy, id, photo_id as photoId
 				FROM candidate
 				WHERE name LIKE ?";
-		
-		try{
-			return Database::getInstance()->fetchMultiObject(QueryBuilder::create($sql, ["%".$name."%"]), Candidate::class) ?: [];
-		}catch (Throwable $t){
-			throw new DatabaseException("Error getting candidates by name", previous: $t);
-		}
+
+        return self::fetchMultiObject(
+            QueryBuilder::create($sql, ["%".$name."%"]),
+            Candidate::class,
+            "Error getting candidates by name"
+        ) ?: [];
 	}
 	
 	/**
@@ -111,12 +108,12 @@ class CandidateRepository
 				INNER JOIN candidate c ON c.photo_id = f.id
 				WHERE c.id = ? AND f.status != ?
 				LIMIT 1";
-		
-		try {
-			return Database::getInstance()->fetchObject(QueryBuilder::create($sql, [$candidate->getId(), EntityStatusEnum::Deleted->value]), Photo::class) ?: null;
-		}catch (Throwable $t){
-			throw new DatabaseException("Error getting candidate photo", previous: $t);
-		}
+
+        return self::fetchObject(
+            QueryBuilder::create($sql, [$candidate->getId(), EntityStatusEnum::Deleted->value]),
+            Photo::class,
+            "Error getting candidate photo"
+        ) ?: null;
 	}
 	
 	/**
@@ -128,18 +125,16 @@ class CandidateRepository
 	 */
 	public static function addTest(Test $test, Candidate $candidate): void{
 		$sql = "INSERT INTO candidate_test (file_id, candidate_id, result) VALUES (?, ?, ?)";
-		
-		try {
-			Database::getInstance()->prepareAndExecute(QueryBuilder::create($sql, [
-				$test->getFileId(),
-				$candidate->getId(),
-				$test->getResult()
-			]));
-		}catch (Throwable $t){
-			throw new DatabaseException("Error saving candidate test", previous: $t);
-		}
+
+        self::prepareAndExecute(
+            QueryBuilder::create($sql, [
+                $test->getFileId(),
+                $candidate->getId(),
+                $test->getResult()
+            ]), errorMessage: "Error saving candidate test"
+        );
 	}
-	
+
 	/**
 	 * @param Resume    $resume
 	 * @param Candidate $candidate
@@ -150,14 +145,12 @@ class CandidateRepository
 	public static function addResume(Resume $resume, Candidate $candidate): void{
 		$sql = "INSERT INTO candidate_resume (file_id, candidate_id) VALUES (?, ?)";
 
-		try {
-			Database::getInstance()->prepareAndExecute(QueryBuilder::create($sql, [
-				$resume->getFileId(),
-				$candidate->getId()
-			]));
-		}catch (Throwable $t){
-			throw new DatabaseException("Error saving candidate resume", previous: $t);
-		}
+        self::prepareAndExecute(
+            QueryBuilder::create($sql, [
+                $resume->getFileId(),
+                $candidate->getId()
+            ]), "Error saving candidate resume"
+        );
 	}
 	
 	/**
@@ -172,12 +165,12 @@ class CandidateRepository
 				INNER JOIN candidate_test ct ON ct.file_id = f.id
 				WHERE ct.candidate_id = ? AND f.status != ?";
 
-		try {
-			return Database::getInstance()->fetchMultiObject(QueryBuilder::create($sql, [$candidate->getId(), EntityStatusEnum::Deleted->value]), Test::class) ?: [];
-		}catch (Throwable $t){
-			throw new DatabaseException("Error getting candidate tests", previous: $t);
-		}
-	}
+        return self::fetchMultiObject(
+            QueryBuilder::create(
+                $sql,
+                [$candidate->getId(), EntityStatusEnum::Deleted->value]
+            ), Test::class, "Error getting candidate tests") ?: [];
+    }
 	
 	/**
 	 * @param Candidate $candidate
@@ -190,11 +183,12 @@ class CandidateRepository
 				FROM file f
 				INNER JOIN candidate_resume cr ON cr.file_id = f.id
 				WHERE cr.candidate_id = ? AND f.status != ?";
-		
-		try {
-			return Database::getInstance()->fetchMultiObject(QueryBuilder::create($sql, [$candidate->getId(), EntityStatusEnum::Deleted->value]), Resume::class) ?: [];
-		}catch (Throwable $t){
-			throw new DatabaseException("Error getting candidate resumes", previous: $t);
-		}
+
+        return self::fetchMultiObject(
+            QueryBuilder::create(
+                $sql,
+                [$candidate->getId(), EntityStatusEnum::Deleted->value]
+            ), Resume::class, "Error getting candidate resumes"
+        ) ?: [];
 	}
 }

@@ -2,16 +2,15 @@
 
 namespace Modules\Test\Infra;
 
-use Throwable;
+use ApplicationBase\Infra\Abstracts\RepositoryAbstract;
 use Modules\Test\Domain\Test;
-use ApplicationBase\Infra\Database;
 use Modules\Comment\Domain\Comment;
 use Modules\Candidate\Domain\Candidate;
 use ApplicationBase\Infra\QueryBuilder;
 use ApplicationBase\Infra\Enums\EntityStatusEnum;
 use ApplicationBase\Infra\Exceptions\DatabaseException;
 
-class TestRepository
+class TestRepository extends RepositoryAbstract
 {
 	/**
 	 * @param Test      $test
@@ -27,15 +26,11 @@ class TestRepository
 				ON DUPLICATE KEY UPDATE
 				result = VALUES(result)";
 
-		try {
-			Database::getInstance()->prepareAndExecute(QueryBuilder::create($sql, [
-				$candidate->getId(),
-				$test->getFileId(),
-				$test->getResult(),
-			]));
-		} catch (Throwable $t) {
-			throw new DatabaseException("Error saving candidate test", previous: $t);
-		}
+        self::prepareAndExecute(QueryBuilder::create($sql, [
+            $candidate->getId(),
+            $test->getFileId(),
+            $test->getResult(),
+		]), "Error saving candidate test");
 	}
 	
 	/**
@@ -51,11 +46,11 @@ class TestRepository
 				LEFT JOIN candidate_test ct ON ct.file_id = f.id
 				WHERE f.id = ? AND f.status != ?";
 
-		try {
-			return Database::getInstance()->fetchObject(QueryBuilder::create($sql, [$fileId, EntityStatusEnum::Deleted->value]), Test::class) ?: null;
-		}catch (Throwable $t){
-			throw new DatabaseException("Error getting Test by file ID", previous: $t);
-		}
+        return self::fetchObject(
+            QueryBuilder::create($sql, [$fileId, EntityStatusEnum::Deleted->value]),
+            Test::class,
+            "Error getting Test by file ID"
+        ) ?: null;
 	}
 	
 	/**
@@ -68,12 +63,11 @@ class TestRepository
 	public static function saveComment(Test $test, Comment $comment): void
 	{
 		$sql = "INSERT INTO candidate_test_comment (file_id, comment_id) VALUES (?, ?)";
-		
-		try {
-			Database::getInstance()->prepareAndExecute(QueryBuilder::create($sql, [$test->getFileId(), $comment->getId()]));
-		} catch (Throwable $t) {
-			throw new DatabaseException("Error saving new comment", previous: $t);
-		}
+
+        self::prepareAndExecute(
+            QueryBuilder::create($sql, [$test->getFileId(), $comment->getId()]),
+            "Error saving new comment"
+        );
 	}
 	
 	/**
@@ -86,15 +80,14 @@ class TestRepository
 	public static function removeComment(Test $test, Comment $comment): void
 	{
 		$sql = "DELETE FROM candidate_test_comment WHERE file_id = ? AND comment_id = ?";
-	
-		try{
-			Database::getInstance()->prepareAndExecute(QueryBuilder::create($sql, [
-				$test->getFileId(),
-				$comment->getId()
-			]));
-		}catch (Throwable $t){
-			throw new DatabaseException("Error removing comment", previous: $t);
-		}
+
+			self::prepareAndExecute(
+                QueryBuilder::create($sql, [
+                    $test->getFileId(),
+                    $comment->getId()
+                ]),
+            "Error removing comment"
+            );
 	}
 	
 	/**
@@ -109,14 +102,10 @@ class TestRepository
 				FROM comment c
 				INNER JOIN candidate_test_comment tc ON tc.comment_id = c.id
 				WHERE tc.file_id = ? AND c.status != ?";
-		
-		try {
-			return Database::getInstance()->fetchMultiObject(QueryBuilder::create($sql, [
-				$test->getFileId(),
-				EntityStatusEnum::Deleted->value
-			]),  Comment::class);
-		} catch (Throwable $t) {
-			throw new DatabaseException("Error getting test comments", previous: $t);
-		}
-	}
+
+        return self::fetchMultiObject(QueryBuilder::create($sql, [
+            $test->getFileId(),
+            EntityStatusEnum::Deleted->value
+        ]),  Comment::class, "Error getting test comments");
+    }
 }
