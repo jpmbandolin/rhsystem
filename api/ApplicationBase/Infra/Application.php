@@ -3,16 +3,8 @@
 namespace ApplicationBase\Infra;
 
 use ApplicationBase\Infra\Environment\Application as EnvApplication;
-use ApplicationBase\Infra\Environment\Database;
-use ApplicationBase\Infra\Environment\Environment;
-use ApplicationBase\Infra\Environment\FileStorage;
-use ApplicationBase\Infra\Environment\Jwt;
-use ApplicationBase\Infra\Environment\Migrations;
-use ApplicationBase\Infra\Environment\Slim;
-use ApplicationBase\Infra\Slim\Authenticator;
-use ApplicationBase\Infra\Slim\Router;
-use ApplicationBase\Infra\Slim\SlimCorsMiddleware;
-use ApplicationBase\Infra\Slim\SlimErrorHandler;
+use ApplicationBase\Infra\Environment\{Redis, Database, Environment, FileStorage, Jwt, Migrations, Slim};
+use ApplicationBase\Infra\Slim\{Authenticator, Router, SlimCorsMiddleware, SlimErrorHandler};
 use ApplicationBase\Infra\WhiteList\WhiteListInterface;
 use DI\Container;
 use DI\Bridge\Slim\Bridge;
@@ -23,9 +15,9 @@ class Application
     private static Container $container;
     private static App $app;
 
-    public static function setupEnvironment(): void
+    public static function setupEnvironment(string $envFilePath = "../env.ini"): void
     {
-        $ENV = parse_ini_file('../env.ini', true);
+        $ENV = parse_ini_file($envFilePath, true);
 
         Environment::setupEnvironment(
             application: new EnvApplication(
@@ -49,7 +41,7 @@ class Application
             migrations: new Migrations(
                 dbHost: $ENV['MIGRATIONS']['db_host']
             ),
-            redis: new \ApplicationBase\Infra\Environment\Redis(
+            redis: new Redis(
                 host: $ENV["REDIS"]['host']
             ),
             slim: new Slim(
