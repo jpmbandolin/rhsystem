@@ -2,7 +2,7 @@
 
 namespace Modules\User\Application\Logout;
 
-use ApplicationBase\Infra\{Abstracts\ControllerAbstract, Slim\Authenticator};
+use ApplicationBase\Infra\{Abstracts\ControllerAbstract, Application, Slim\Authenticator};
 use DI\{DependencyException, NotFoundException};
 use Psr\Http\Message\ResponseInterface;
 
@@ -14,7 +14,7 @@ class Logout extends ControllerAbstract
 	 */
 	public function run(): ResponseInterface
 	{
-		global $container;
+		$container = Application::getSlimContainer();
 		$jwt = $container->get('jwt');
 
 		if (!is_null($whiteList = Authenticator::getWhiteList())) {

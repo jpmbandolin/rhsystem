@@ -2,6 +2,7 @@
 
 namespace ApplicationBase\Infra\Attributes;
 
+use ApplicationBase\Infra\Application;
 use ApplicationBase\Infra\Exceptions\PermissionException;
 use ApplicationBase\Infra\JWT;
 use Attribute;
@@ -17,7 +18,7 @@ final class RouteAuthenticator
 	 * @throws NotFoundException
 	 */
 	public function __construct(private array $permissionRequired){
-		global $container;
+		$container = Application::getSlimContainer();
 		$jwtPayload = $container->get(JWT::class);
 		$haveAccess = in_array($this->permissionRequired, $jwtPayload->permissions, true);
 

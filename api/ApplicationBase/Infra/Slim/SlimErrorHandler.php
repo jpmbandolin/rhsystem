@@ -2,6 +2,7 @@
 
 namespace ApplicationBase\Infra\Slim;
 
+use ApplicationBase\Infra\Application;
 use ApplicationBase\Infra\Environment\Environment;
 use ApplicationBase\Infra\Exceptions\AppException;
 use ApplicationBase\Infra\Exceptions\NotFoundException;
@@ -30,7 +31,7 @@ class SlimErrorHandler extends ErrorHandler
      */
 	public function __invoke(ServerRequestInterface $request, Throwable $exception, bool $displayErrorDetails, bool $logErrors, bool $logErrorDetails): ResponseInterface
 	{
-		global $app;
+		$app = Application::getSlimApp();
 
 		$payload = [];
 		$devEnvironment = Environment::getEnvironment()->getApplication()->getEnvironment() === "dev";

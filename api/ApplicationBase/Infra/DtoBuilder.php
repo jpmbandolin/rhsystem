@@ -36,7 +36,7 @@ class DtoBuilder
 
 		$dto->validateDTO();
 
-		global $container;
+		$container = Application::getSlimContainer();
 		$container->set($dto::class, $dto);
 		$request = $request->withParsedBody($dto);
 

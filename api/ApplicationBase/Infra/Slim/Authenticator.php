@@ -2,6 +2,7 @@
 
 namespace ApplicationBase\Infra\Slim;
 
+use ApplicationBase\Infra\Application;
 use ApplicationBase\Infra\JWT;
 use Psr\Http\Server\RequestHandlerInterface;
 use ApplicationBase\Infra\WhiteList\WhiteListInterface;
@@ -39,7 +40,7 @@ class Authenticator
 	 */
 	public function __invoke(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
 	{
-		global $container;
+		$container = Application::getSlimContainer();
 		$headers = $request->getHeaders();
 
 		if ((!isset($headers['Authorization']) || empty($headers['Authorization'][0]))) {

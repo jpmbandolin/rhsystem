@@ -2,20 +2,19 @@
 
 namespace ApplicationBase\Infra\Slim;
 
-use Slim\App;
+use ApplicationBase\Infra\Application;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 class Router
 {
-	/**
-	 * @param App $app
-	 *
-	 * @return void
-	 */
-	public function __invoke(App $app): void
+    /**
+     * @return void
+     */
+	public static function declareRoutes(): void
 	{
+        $app = Application::getSlimApp();
 		$fullUri = $_SERVER['REQUEST_URI'];
 		$rootUri = dirname($_SERVER['SCRIPT_NAME']);
 		$path = str_replace($rootUri, "", $fullUri);

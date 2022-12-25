@@ -4,7 +4,7 @@
 namespace ApplicationBase\Infra\Abstracts;
 
 
-use ApplicationBase\Infra\{Exceptions\RuntimeException, JWT, JWTPayload, PaginatedData};
+use ApplicationBase\Infra\{Application, Exceptions\RuntimeException, JWT, JWTPayload, PaginatedData};
 use Modules\File\Domain\FileAbstract;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Response;
@@ -94,9 +94,8 @@ abstract class ControllerAbstract
 	 * @throws UnauthenticatedException
 	 */
 	final public static function getJwtData():JWTPayload{
-		global $container;
 		try{
-			return new JWTPayload($container->get(JWT::class));
+			return new JWTPayload(Application::getSlimContainer()->get(JWT::class));
 		}catch (\Throwable $t){
 			throw new UnauthenticatedException("Error getting user payload", previous: $t);
 		}
